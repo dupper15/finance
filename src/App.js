@@ -6,7 +6,7 @@ import { Layout } from './components/layout/Layout.js';
 import { Login } from './pages/Auth/Login.js';
 import { Register } from './pages/Auth/Register.js';
 import { Dashboard } from './pages/Dashboard/Dashboard.js';
-import { Transactions } from './pages/Transactions/Transactions.js';
+import { Transactions } from './pages/Transactions/Transactions.jsx';
 import { Accounts } from './pages/Accounts/Accounts.js';
 import { Budget } from './pages/Budget/Budget.js';
 import { Reports } from './pages/Reports/Reports.js';
