@@ -12,11 +12,11 @@ export function useTags() {
     deleteTag,
   } = useFinance();
 
-  useEffect(() => {
-    if (tags.length === 0 && !loading.tags) {
-      loadTags();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (tags.length === 0 && !loading.tags) {
+  //     loadTags();
+  //   }
+  // }, []);
 
   return {
     tags,

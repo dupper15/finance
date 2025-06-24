@@ -13,11 +13,11 @@ export function useScheduledTransactions() {
     toggleScheduledTransaction,
   } = useFinance();
 
-  useEffect(() => {
-    if (scheduledTransactions.length === 0 && !loading.scheduledTransactions) {
-      loadScheduledTransactions();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (scheduledTransactions.length === 0 && !loading.scheduledTransactions) {
+  //     loadScheduledTransactions();
+  //   }
+  // }, []);
 
   return {
     scheduledTransactions,

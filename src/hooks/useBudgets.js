@@ -10,11 +10,11 @@ export function useBudgets() {
     createBudget,
   } = useFinance();
 
-  useEffect(() => {
-    if (budgets.length === 0 && !loading.budgets) {
-      loadBudgets();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (budgets.length === 0 && !loading.budgets) {
+  //     loadBudgets();
+  //   }
+  // }, []);
 
   return {
     budgets,
