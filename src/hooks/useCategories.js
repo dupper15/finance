@@ -10,11 +10,11 @@ export function useCategories() {
     createCategory,
   } = useFinance();
 
-  useEffect(() => {
-    if (categories.length === 0 && !loading.categories) {
-      loadCategories();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (categories.length === 0 && !loading.categories) {
+  //     loadCategories();
+  //   }
+  // }, []);
 
   return {
     categories,

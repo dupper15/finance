@@ -27,9 +27,9 @@ export function useTransactions(initialFilters = {}) {
   });
 
   // Load transactions when filters change
-  useEffect(() => {
-    loadTransactions(localFilters);
-  }, []);
+  // useEffect(() => {
+  //   loadTransactions(localFilters);
+  // }, [loadTransactions, localFilters]);
 
   const updateFilters = useCallback((newFilters) => {
     const updatedFilters = {

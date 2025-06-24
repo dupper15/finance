@@ -9,9 +9,9 @@ export function useDashboard() {
     loadDashboard,
   } = useFinance();
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
+  // useEffect(() => {
+  //   loadDashboard();
+  // }, []);
 
   return {
     dashboardData,
