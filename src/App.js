@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext.js';
 import { FinanceProvider } from './context/FinanceContext.js';
@@ -12,26 +12,79 @@ import { Budget } from './pages/Budget/Budget.js';
 import { Reports } from './pages/Reports/Reports.js';
 import { Settings } from './pages/Settings/Settings.js';
 import { LoadingSpinner } from './components/ui/Loading/LoadingSpinner.js';
+import { DatabaseSeeder } from './components/DatabaseSeeder.jsx';
+import { financeService } from './services/financeService.js';
+
+function DatabaseChecker({ children }) {
+    const [checkingDatabase, setCheckingDatabase] = useState(true);
+    const [hasData, setHasData] = useState(false);
+
+    useEffect(() => {
+        const checkDatabaseData = async () => {
+            try {
+                // Check if we have any accounts (indicates if database has been set up)
+                const accounts = await financeService.getAccounts();
+                setHasData(accounts.length > 0);
+            } catch (error) {
+                console.error('Error checking database:', error);
+                setHasData(false);
+            } finally {
+                setCheckingDatabase(false);
+            }
+        };
+
+        checkDatabaseData();
+    }, []);
+
+    if (checkingDatabase) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <LoadingSpinner size="lg" />
+                    <p className="mt-4 text-gray-600">Checking database...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!hasData) {
+        return <DatabaseSeeder />;
+    }
+
+    return children;
+}
 
 function ProtectedRoute({ children }) {
     const { isAuthenticated, loading } = useAuth();
 
     if (loading) {
-        return <LoadingSpinner />;
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <LoadingSpinner size="lg" />
+            </div>
+        );
     }
 
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
     }
 
-    return children;
+    return (
+        <DatabaseChecker>
+            {children}
+        </DatabaseChecker>
+    );
 }
 
 function PublicRoute({ children }) {
     const { isAuthenticated, loading } = useAuth();
 
     if (loading) {
-        return <LoadingSpinner />;
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <LoadingSpinner size="lg" />
+            </div>
+        );
     }
 
     if (isAuthenticated) {
