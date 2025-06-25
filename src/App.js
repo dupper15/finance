@@ -8,7 +8,7 @@ import { Register } from './pages/Auth/Register.js';
 import { Dashboard } from './pages/Dashboard/Dashboard.js';
 import { Transactions } from './pages/Transactions/Transactions.jsx';
 import { Accounts } from './pages/Accounts/Accounts.js';
-import { Budget } from './pages/Budget/Budget.js';
+import { Budget } from './pages/Budget/Budget.jsx';
 import { Reports } from './pages/Reports/Reports.js';
 import { Settings } from './pages/Settings/Settings.js';
 import { LoadingSpinner } from './components/ui/Loading/LoadingSpinner.js';
