@@ -53,8 +53,7 @@ export function Transactions() {
 
     useEffect(() => {
         updateFilters({ account_id: selectedAccountId });
-        console.log("AccountId: " + selectedAccountId);
-    }, [selectedAccountId]);
+    }, [selectedAccountId   ]);
 
     const handleCreateTransaction = () => {
         setEditingTransaction(null);
