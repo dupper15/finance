@@ -1,7 +1,7 @@
 import { FaChartPie } from "react-icons/fa";
 import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 
-const OutcomeBudgetChart = ({ pieChartData, COLORS }) => {
+const OutcomeBudgetChart = ({ expenseChartData, COLORS }) => {
   return (
     <div className='bg-white shadow rounded-lg p-6'>
       <h3 className='font-medium text-md text-gray-800 mb-4 flex items-center gap-2'>
@@ -10,14 +10,14 @@ const OutcomeBudgetChart = ({ pieChartData, COLORS }) => {
       <div className='flex justify-center'>
         <PieChart width={400} height={300}>
           <Pie
-            data={pieChartData}
+            data={expenseChartData}
             dataKey='value'
             nameKey='name'
             cx='50%'
             cy='50%'
             outerRadius={100}
             label>
-            {pieChartData.map((_, index) => (
+            {expenseChartData.map((_, index) => (
               <Cell
                 key={`cell-expense-${index}`}
                 fill={COLORS[(index % COLORS.length) + 4]}
