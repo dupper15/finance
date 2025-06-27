@@ -4,16 +4,22 @@ import { useReports } from '../../hooks/useReports.js';
 import { formatCurrency } from '../../utils/formatters/currency.js';
 import { formatDate } from '../../utils/formatters/date.js';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {useUser} from "../../hooks/useUser";
 
 export function Dashboard() {
     const { dashboardData, loading: dashboardLoading, refetch } = useDashboard();
     const { getIncomeExpenseReport, getExpenseByCategoryReport } = useReports();
+    const { user } = useUser();
 
     const [chartData, setChartData] = useState({
         incomeExpense: [],
         expenseByCategory: [],
     });
     const [chartLoading, setChartLoading] = useState(true);
+
+    useEffect(() => {
+        console.log("user: ", user)
+    }, [user]);
 
     useEffect(() => {
         const loadChartData = async () => {

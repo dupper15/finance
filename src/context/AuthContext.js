@@ -66,6 +66,7 @@ export function AuthProvider({ children }) {
                     type: 'LOGIN_SUCCESS',
                     payload: { user: currentUser },
                 });
+                console.log(currentUser);
             } else {
                 dispatch({ type: 'SET_LOADING', payload: false });
             }
