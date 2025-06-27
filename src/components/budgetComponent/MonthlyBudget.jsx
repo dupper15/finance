@@ -3,6 +3,8 @@ import { HiChartPie, HiCurrencyDollar, HiReceiptTax } from "react-icons/hi";
 const MonthlyBudget = ({
   selectedMonth,
   setSelectedMonth,
+  selectedYear,
+  setSelectedYear,
   totalIncome,
   totalExpenses,
   setIsShowModal,
@@ -18,10 +20,23 @@ const MonthlyBudget = ({
         <div className='flex gap-2'>
           <select
             className='border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 shadow-sm focus:ring-blue-500 focus:border-blue-500'
-            value={selectedMonth}
+            value={selectedMonth.toString().padStart(2, "0")}
             onChange={(e) => setSelectedMonth(e.target.value)}>
-            <option value='2025-05'>Tháng 5/2025</option>
-            <option value='2025-06'>Tháng 6/2025</option>
+            {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+              <option key={month} value={month.toString().padStart(2, "0")}>
+                Tháng {month}
+              </option>
+            ))}
+          </select>
+          <select
+            className='border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 shadow-sm focus:ring-blue-500 focus:border-blue-500'
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}>
+            {[2024, 2025, 2026].map((year) => (
+              <option key={year} value={year}>
+                Năm {year}
+              </option>
+            ))}
           </select>
           <button
             onClick={() => setIsShowModal(true)}
@@ -51,7 +66,7 @@ const MonthlyBudget = ({
 
         <div className='bg-white border border-blue-200 rounded-md p-4 shadow-sm'>
           <p className='text-blue-600 font-medium flex items-center gap-1'>
-            <HiChartPie /> Số dư
+            <HiChartPie /> Tích lũy
           </p>
           <p
             className={`font-semibold text-lg mt-1 ${
