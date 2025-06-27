@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useAccounts} from "../../hooks/useAccounts";
 import {formatCurrency} from "../../utils/formatters/currency";
 import {ACCOUNT_TYPE_LABELS} from "../../utils/constants/accountTypes";
 
-export function AccountsSidebar({ selectedAccountId, onAccountSelect, className = '' }) {
-    const { accounts, loading } = useAccounts();
+export function AccountsSidebar({selectedAccountId, onAccountSelect, className = ''}) {
+    const {accounts, loading} = useAccounts();
 
     const totalBalance = accounts.reduce((sum, account) => sum + parseFloat(account.balance || 0), 0);
 
@@ -16,6 +16,10 @@ export function AccountsSidebar({ selectedAccountId, onAccountSelect, className 
         groups[type].push(account);
         return groups;
     }, {});
+
+    useEffect(() => {
+        console.log("Account Sidebar " + loading)
+    }, [loading]);
 
     if (loading) {
         return (
@@ -39,7 +43,8 @@ export function AccountsSidebar({ selectedAccountId, onAccountSelect, className 
                     <h3 className="text-lg font-medium text-gray-900">Tài khoản</h3>
                     <button className="text-sm text-blue-600 hover:text-blue-800">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                         </svg>
                     </button>
                 </div>
@@ -67,8 +72,10 @@ export function AccountsSidebar({ selectedAccountId, onAccountSelect, className 
                 >
                     <div className="flex items-center">
                         <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
-                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                             </svg>
                         </div>
                         <div>
@@ -97,7 +104,8 @@ export function AccountsSidebar({ selectedAccountId, onAccountSelect, className 
                                         }`}
                                     >
                                         <div className="flex items-center min-w-0 flex-1">
-                                            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                            <div
+                                                className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
                         <span className="text-xs font-medium text-white">
                           {account.name.charAt(0).toUpperCase()}
                         </span>
@@ -125,15 +133,19 @@ export function AccountsSidebar({ selectedAccountId, onAccountSelect, className 
 
                 {accounts.length === 0 && (
                     <div className="text-center py-8">
-                        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
                         <h3 className="mt-2 text-sm font-medium text-gray-900">Chưa có tài khoản</h3>
                         <p className="mt-1 text-sm text-gray-500">Hãy tạo tài khoản đầu tiên</p>
                         <div className="mt-6">
-                            <button className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+                            <button
+                                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
                                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                 </svg>
                                 Thêm tài khoản
                             </button>

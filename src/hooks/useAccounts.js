@@ -12,11 +12,11 @@ export function useAccounts() {
     deleteAccount,
   } = useFinance();
 
-  // useEffect(() => {
-  //   if (accounts.length === 0 && !loading.accounts) {
-  //     loadAccounts();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (accounts.length === 0 && !loading.accounts) {
+      loadAccounts();
+    }
+  }, [accounts.length, loading.accounts]);
 
   return {
     accounts,
