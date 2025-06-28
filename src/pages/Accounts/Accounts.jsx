@@ -4,6 +4,7 @@ import { LoadingSpinner } from "../../components/ui/Loading/LoadingSpinner";
 import AccountCard from "../../components/accountComponent/AccountCard";
 import AccountFormModal from "../../components/accountComponent/AccountFormModal";
 import ConfirmDialog from "../../components/accountComponent/ConfirmDialog";
+import { useUser } from "../../hooks/useUser";
 
 export function Accounts() {
 	const { accounts, loading, createAccount, updateAccount, deleteAccount } =
@@ -12,6 +13,7 @@ export function Accounts() {
 	const [selectedAccount, setSelectedAccount] = useState(null);
 	const [confirmOpen, setConfirmOpen] = useState(false);
 	const [accountToDelete, setAccountToDelete] = useState(null);
+	const { userId } = useUser();
 
 	const handleAdd = () => {
 		setSelectedAccount(null);
@@ -37,12 +39,30 @@ export function Accounts() {
 	};
 
 	const handleSave = async (data) => {
-		if (selectedAccount) {
-			await updateAccount(data.account_id, data);
-		} else {
-			await createAccount(data);
+		if (!userId) {
+			alert("Không thể tạo tài khoản vì chưa có thông tin người dùng.");
+			return;
 		}
-		setIsModalOpen(false);
+
+		const payload = {
+			...data,
+			user_id: userId,
+			balance: parseFloat(data.balance),
+		};
+
+		console.log("Form submitting:", payload);
+
+		try {
+			if (selectedAccount) {
+				await updateAccount(data.account_id, payload);
+			} else {
+				await createAccount(payload);
+			}
+			setIsModalOpen(false);
+		} catch (error) {
+			console.error("Lỗi khi lưu tài khoản:", error.message);
+			alert("Lưu tài khoản thất bại: " + error.message);
+		}
 	};
 
 	if (loading) {
