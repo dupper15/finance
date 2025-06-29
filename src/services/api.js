@@ -1,9 +1,13 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
-
 class ApiService {
     constructor() {
+        this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+        this.token = null;
+        this.twoFactorToken = null;
+        this.initializeToken();
+    }
+
+    initializeToken() {
         this.token = localStorage.getItem('auth_token');
-        this.baseURL = API_BASE_URL;
     }
 
     setToken(token) {
@@ -15,6 +19,14 @@ class ApiService {
         }
     }
 
+    setTwoFactorToken(token) {
+        this.twoFactorToken = token;
+    }
+
+    clearTwoFactorToken() {
+        this.twoFactorToken = null;
+    }
+
     getHeaders() {
         const headers = {
             'Content-Type': 'application/json',
@@ -24,90 +36,92 @@ class ApiService {
             headers.Authorization = `Bearer ${this.token}`;
         }
 
+        if (this.twoFactorToken) {
+            headers['X-2FA-Token'] = this.twoFactorToken;
+        }
+
         return headers;
     }
 
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
         const config = {
-            headers: this.getHeaders(),
             ...options,
+            headers: {
+                ...this.getHeaders(),
+                ...options.headers,
+            },
         };
 
         try {
             const response = await fetch(url, config);
+            const data = await response.json();
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                if (response.status === 403 && data.requiresTwoFactor) {
+                    const error = new Error(data.error || 'Two-factor authentication required');
+                    error.requiresTwoFactor = true;
+                    error.status = 403;
+                    error.user = data.user;
+                    error.session = data.session;
+                    throw error;
+                }
+
+                if (response.status === 401) {
+                    this.setToken(null);
+                    this.clearTwoFactorToken();
+                    window.location.href = '/login';
+                    return;
+                }
+
+                throw new Error(data.error || data.message || 'Request failed');
             }
 
-            return await response.json();
+            return data;
         } catch (error) {
-            console.error('API request failed:', error);
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Network error. Please check your connection.');
+            }
             throw error;
         }
     }
 
-    async get(endpoint) {
-        return this.request(endpoint, { method: 'GET' });
-    }
-
-    async post(endpoint, data) {
+    async get(endpoint, options = {}) {
         return this.request(endpoint, {
-            method: 'POST',
-            body: JSON.stringify(data),
+            method: 'GET',
+            ...options,
         });
     }
 
-    async put(endpoint, data) {
+    async post(endpoint, data = null, options = {}) {
+        return this.request(endpoint, {
+            method: 'POST',
+            body: data ? JSON.stringify(data) : null,
+            ...options,
+        });
+    }
+
+    async put(endpoint, data = null, options = {}) {
         return this.request(endpoint, {
             method: 'PUT',
-            body: JSON.stringify(data),
+            body: data ? JSON.stringify(data) : null,
+            ...options,
         });
     }
 
-    async delete(endpoint) {
-        return this.request(endpoint, { method: 'DELETE' });
-    }
-
-    async patch(endpoint, data) {
+    async patch(endpoint, data = null, options = {}) {
         return this.request(endpoint, {
             method: 'PATCH',
-            body: JSON.stringify(data),
+            body: data ? JSON.stringify(data) : null,
+            ...options,
         });
     }
 
-    async uploadFile(endpoint, formData) {
-        const headers = {};
-        if (this.token) {
-            headers.Authorization = `Bearer ${this.token}`;
-        }
-
-        const response = await fetch(`${this.baseURL}${endpoint}`, {
-            method: 'POST',
-            headers,
-            body: formData,
+    async delete(endpoint, options = {}) {
+        return this.request(endpoint, {
+            method: 'DELETE',
+            ...options,
         });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-        }
-
-        return await response.json();
-    }
-
-    async downloadFile(endpoint) {
-        const response = await fetch(`${this.baseURL}${endpoint}`, {
-            headers: this.getHeaders(),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        return response.blob();
     }
 }
 

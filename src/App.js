@@ -8,14 +8,14 @@ import {
 import { AuthProvider, useAuth } from "./context/AuthContext.js";
 import { FinanceProvider } from "./context/FinanceContext.js";
 import { Layout } from "./components/layout/Layout.js";
-import { Login } from "./pages/Auth/Login.js";
+import { Login } from "./pages/Auth/Login.jsx";
 import { Register } from "./pages/Auth/Register.js";
 import { Dashboard } from "./pages/Dashboard/Dashboard.js";
 import { Transactions } from "./pages/Transactions/Transactions.jsx";
 import { Accounts } from "./pages/Accounts/Accounts.jsx";
 import { Budget } from "./pages/Budget/Budget.jsx";
 import { Reports } from "./pages/Reports/Reports.jsx";
-import { Settings } from "./pages/Settings/Settings.js";
+import { Settings } from "./pages/Settings/Settings.jsx";
 import { LoadingSpinner } from "./components/ui/Loading/LoadingSpinner.js";
 import { UserProvider } from "./context/UserContext";
 

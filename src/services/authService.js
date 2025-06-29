@@ -21,6 +21,9 @@ export class AuthService {
 
       return response;
     } catch (error) {
+      if (error.requiresTwoFactor) {
+        throw error;
+      }
       throw new Error(error.message || "Login failed");
     }
   }
