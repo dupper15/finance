@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useBudgets } from "../../hooks/useBudgets.js";
 import { LoadingSpinner } from "../../components/ui/Loading/LoadingSpinner.js";
 import MonthlyBudget from "../../components/budgetComponent/MonthlyBudget.jsx";
@@ -103,7 +103,9 @@ const savingGoals = [
 ];
 
 export function Budget() {
-  const [selectedMonth, setSelectedMonth] = useState(6);
+  const [account, setAccount] = useState([]);
+  const [selectedAccount, setSelectedAccount] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(7);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [data, setData] = useState([]);
   const getBudgetsMutation = useMutation({
@@ -117,14 +119,13 @@ export function Budget() {
   });
   const { user } = useAuth();
 
-  // Access user ID
   const userId = user?.id;
   const getBudgets = () => {
     if (selectedMonth && selectedYear) {
       getBudgetsMutation.mutate({
         month: selectedMonth,
         year: selectedYear,
-        user_id: "5294e4fd-24bf-49c0-b58b-d2256d8286ee",
+        user_id: userId,
       });
     }
   };
@@ -169,6 +170,22 @@ export function Budget() {
       (sum, item) => sum + item.budgets.reduce((s, b) => s + b.amount, 0),
       0
     );
+  const getAccountMutation = useMutation({
+    mutationFn: budgetService.getAccount,
+    onSuccess: (data) => {
+      setAccount(data);
+      console.log("Account data:", data);
+    },
+    onError: (error) => {
+      console.error("Error fetching account:", error);
+    },
+  });
+  const getAccount = () => {
+    getAccountMutation.mutate("5294e4fd-24bf-49c0-b58b-d2256d8286ee");
+  };
+  useEffect(() => {
+    getAccount();
+  }, []);
 
   const totalExpenses = data
     .filter((item) => item.type === "expense")
@@ -184,6 +201,10 @@ export function Budget() {
     <div>
       <div className='space-y-6 w-full'>
         <MonthlyBudget
+          setSelectedAccount={setSelectedAccount}
+          selectedAccount={selectedAccount}
+          setAccount={setAccount}
+          account={account || {}}
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
           totalExpenses={totalExpenses}

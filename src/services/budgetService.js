@@ -75,6 +75,15 @@ export class BudgetService {
       throw new Error(error.message || "Xoá danh mục thất bại");
     }
   }
+  async getAccount(userId) {
+    try {
+      const response = await apiService.get(`/accounts/${userId}`);
+      console.log("Account data fetched successfully:", response);
+      return response;
+    } catch (error) {
+      throw new Error(error.message || "Lấy thông tin tài khoản thất bại");
+    }
+  }
 }
 
 export const budgetService = new BudgetService();
