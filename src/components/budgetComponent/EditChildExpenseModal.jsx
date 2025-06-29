@@ -109,20 +109,6 @@ const EditChildExpenseModal = ({
 
           <div>
             <label className='block text-sm font-medium text-gray-700'>
-              Thời gian
-            </label>
-            <select
-              className='w-full mt-1 border rounded px-3 py-2 text-sm'
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              required>
-              <option value='monthly'>Hàng tháng</option>
-              <option value='yearly'>Hàng năm</option>
-            </select>
-          </div>
-
-          <div>
-            <label className='block text-sm font-medium text-gray-700'>
               Ngày bắt đầu
             </label>
             <input

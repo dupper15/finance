@@ -1,22 +1,7 @@
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { GiReceiveMoney, GiPayMoney, GiMoneyStack } from "react-icons/gi";
 
-const Summary = () => {
-  const income = {
-    thisMonth: 5000000,
-    lastMonth: 4500000,
-  };
-
-  const expenses = {
-    thisMonth: 3000000,
-    lastMonth: 2500000,
-  };
-
-  const savings = {
-    thisMonth: income.thisMonth - expenses.thisMonth,
-    lastMonth: income.lastMonth - expenses.lastMonth,
-  };
-
+const Summary = ({ income, expenses, savings }) => {
   const formatVND = (number) =>
     number.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
@@ -24,7 +9,6 @@ const Summary = () => {
     const diff = current - previous;
     const isChiTieu = title === "Chi tiêu";
 
-    // Xác định màu và biểu tượng dựa trên loại dữ liệu
     const isIncrease = diff > 0;
     const isEqual = diff === 0;
 
@@ -33,11 +17,9 @@ const Summary = () => {
 
     if (!isEqual) {
       if (isChiTieu) {
-        // Chi tiêu tăng là xấu (đỏ + mũi tên lên), giảm là tốt (xanh + mũi tên xuống)
         iconElement = isIncrease ? <FaArrowUp /> : <FaArrowDown />;
         colorClass = isIncrease ? "text-red-600" : "text-green-600";
       } else {
-        // Các mục khác: tăng là tốt (xanh + mũi tên lên), giảm là xấu (đỏ + mũi tên xuống)
         iconElement = isIncrease ? <FaArrowUp /> : <FaArrowDown />;
         colorClass = isIncrease ? "text-green-600" : "text-red-600";
       }
