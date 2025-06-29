@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useFinance } from '../context/FinanceContext.js';
 
@@ -9,9 +8,9 @@ export function useDashboard() {
     loadDashboard,
   } = useFinance();
 
-  // useEffect(() => {
-  //   loadDashboard();
-  // }, []);
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
 
   return {
     dashboardData,

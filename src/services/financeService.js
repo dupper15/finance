@@ -278,8 +278,11 @@ export class FinanceService {
 	}
 
 	// Dashboard method
+	// Dashboard method
 	async getDashboard() {
-		return apiService.get("/dashboard");
+		const response = await apiService.get("/dashboard");
+		// Extract the data from the API response wrapper
+		return response.data || response;
 	}
 }
 

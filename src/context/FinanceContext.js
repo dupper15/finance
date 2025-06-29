@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from "react";
+import React, { createContext, useContext, useReducer, useMemo, useCallback } from "react";
 import { financeService } from "../services/financeService.js";
 
 const FinanceContext = createContext();
@@ -234,15 +234,15 @@ function financeReducer(state, action) {
 export function FinanceProvider({ children }) {
 	const [state, dispatch] = useReducer(financeReducer, initialState);
 
-	const setLoading = (type, value) => {
+	const setLoading = useCallback((type, value) => {
 		dispatch({ type: "SET_LOADING", payload: { type, value } });
-	};
+	}, []);
 
-	const setError = (error) => {
+	const setError = useCallback((error) => {
 		dispatch({ type: "SET_ERROR", payload: error });
-	};
+	}, []);
 
-	const loadAccounts = async () => {
+	const loadAccounts = useCallback(async () => {
 		try {
 			setLoading("accounts", true);
 			const accounts = await financeService.getAccounts();
@@ -251,9 +251,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			setLoading("accounts", false);
 		}
-	};
+	}, [setLoading, setError]);
 
-	const createAccount = async (accountData) => {
+	const createAccount = useCallback(async (accountData) => {
 		try {
 			const newAccount = await financeService.createAccount(accountData);
 			dispatch({ type: "ADD_ACCOUNT", payload: newAccount });
@@ -262,23 +262,20 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const updateAccount = async (accountData) => {
+	const updateAccount = useCallback(async (accountData) => {
 		try {
-			const updatedAccount = await financeService.updateAccount(
-				accountData.accountId,
-				accountData
-			);
+			const updatedAccount = await financeService.updateAccount(accountData);
 			dispatch({ type: "UPDATE_ACCOUNT", payload: updatedAccount });
 			return updatedAccount;
 		} catch (error) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const deleteAccount = async (accountId) => {
+	const deleteAccount = useCallback(async (accountId) => {
 		try {
 			await financeService.deleteAccount(accountId);
 			dispatch({ type: "DELETE_ACCOUNT", payload: accountId });
@@ -286,9 +283,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const loadTransactions = async (filters = {}) => {
+	const loadTransactions = useCallback(async (filters = {}) => {
 		try {
 			setLoading("transactions", true);
 			const response = await financeService.getTransactions(filters);
@@ -300,9 +297,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			setLoading("transactions", false);
 		}
-	};
+	}, [setLoading, setError]);
 
-	const createTransaction = async (transactionData) => {
+	const createTransaction = useCallback(async (transactionData) => {
 		try {
 			const newTransaction = await financeService.createTransaction(
 				transactionData
@@ -314,9 +311,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError, loadAccounts]);
 
-	const updateTransaction = async (transactionId, transactionData) => {
+	const updateTransaction = useCallback(async (transactionId, transactionData) => {
 		try {
 			const updatedTransaction = await financeService.updateTransaction(
 				transactionId,
@@ -329,9 +326,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError, loadAccounts]);
 
-	const deleteTransaction = async (transactionId) => {
+	const deleteTransaction = useCallback(async (transactionId) => {
 		try {
 			await financeService.deleteTransaction(transactionId);
 			dispatch({ type: "DELETE_TRANSACTION", payload: transactionId });
@@ -340,9 +337,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError, loadAccounts]);
 
-	const loadCategories = async () => {
+	const loadCategories = useCallback(async () => {
 		try {
 			setLoading("categories", true);
 			const categories = await financeService.getCategories();
@@ -351,9 +348,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			setLoading("categories", false);
 		}
-	};
+	}, [setLoading, setError]);
 
-	const createCategory = async (categoryData) => {
+	const createCategory = useCallback(async (categoryData) => {
 		try {
 			const newCategory = await financeService.createCategory(categoryData);
 			dispatch({ type: "ADD_CATEGORY", payload: newCategory });
@@ -362,9 +359,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const loadTags = async () => {
+	const loadTags = useCallback(async () => {
 		try {
 			setLoading("tags", true);
 			const tags = await financeService.getTags();
@@ -373,9 +370,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			setLoading("tags", false);
 		}
-	};
+	}, [setLoading, setError]);
 
-	const createTag = async (tagData) => {
+	const createTag = useCallback(async (tagData) => {
 		try {
 			const newTag = await financeService.createTag(tagData);
 			dispatch({ type: "ADD_TAG", payload: newTag });
@@ -384,9 +381,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const updateTag = async (tagId, tagData) => {
+	const updateTag = useCallback(async (tagId, tagData) => {
 		try {
 			const updatedTag = await financeService.updateTag(tagId, tagData);
 			dispatch({ type: "UPDATE_TAG", payload: updatedTag });
@@ -395,9 +392,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const deleteTag = async (tagId) => {
+	const deleteTag = useCallback(async (tagId) => {
 		try {
 			await financeService.deleteTag(tagId);
 			dispatch({ type: "DELETE_TAG", payload: tagId });
@@ -405,9 +402,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const loadBudgets = async () => {
+	const loadBudgets = useCallback(async () => {
 		try {
 			setLoading("budgets", true);
 			const budgets = await financeService.getBudgets();
@@ -416,9 +413,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			setLoading("budgets", false);
 		}
-	};
+	}, [setLoading, setError]);
 
-	const createBudget = async (budgetData) => {
+	const createBudget = useCallback(async (budgetData) => {
 		try {
 			const newBudget = await financeService.createBudget(budgetData);
 			dispatch({ type: "ADD_BUDGET", payload: newBudget });
@@ -427,9 +424,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const loadScheduledTransactions = async () => {
+	const loadScheduledTransactions = useCallback(async () => {
 		try {
 			setLoading("scheduledTransactions", true);
 			const scheduledTransactions =
@@ -442,9 +439,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			setLoading("scheduledTransactions", false);
 		}
-	};
+	}, [setLoading, setError]);
 
-	const createScheduledTransaction = async (scheduledData) => {
+	const createScheduledTransaction = useCallback(async (scheduledData) => {
 		try {
 			const newScheduled = await financeService.createScheduledTransaction(
 				scheduledData
@@ -455,9 +452,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const updateScheduledTransaction = async (scheduledId, scheduledData) => {
+	const updateScheduledTransaction = useCallback(async (scheduledId, scheduledData) => {
 		try {
 			const updatedScheduled = await financeService.updateScheduledTransaction(
 				scheduledId,
@@ -472,9 +469,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const deleteScheduledTransaction = async (scheduledId) => {
+	const deleteScheduledTransaction = useCallback(async (scheduledId) => {
 		try {
 			await financeService.deleteScheduledTransaction(scheduledId);
 			dispatch({ type: "DELETE_SCHEDULED_TRANSACTION", payload: scheduledId });
@@ -482,9 +479,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const toggleScheduledTransaction = async (scheduledId) => {
+	const toggleScheduledTransaction = useCallback(async (scheduledId) => {
 		try {
 			const updatedScheduled = await financeService.toggleScheduledTransaction(
 				scheduledId
@@ -498,9 +495,9 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			throw error;
 		}
-	};
+	}, [setError]);
 
-	const loadDashboard = async () => {
+	const loadDashboard = useCallback(async () => {
 		try {
 			setLoading("dashboard", true);
 			const dashboardData = await financeService.getDashboard();
@@ -509,17 +506,17 @@ export function FinanceProvider({ children }) {
 			setError(error.message);
 			setLoading("dashboard", false);
 		}
-	};
+	}, [setLoading, setError]);
 
-	const setTransactionFilters = (filters) => {
+	const setTransactionFilters = useCallback((filters) => {
 		dispatch({ type: "SET_TRANSACTION_FILTERS", payload: filters });
-	};
+	}, []);
 
-	const resetTransactionFilters = () => {
+	const resetTransactionFilters = useCallback(() => {
 		dispatch({ type: "RESET_TRANSACTION_FILTERS" });
-	};
+	}, []);
 
-	const value = {
+	const value = useMemo(() => ({
 		...state,
 		loadAccounts,
 		createAccount,
@@ -546,7 +543,7 @@ export function FinanceProvider({ children }) {
 		setTransactionFilters,
 		resetTransactionFilters,
 		setError,
-	};
+	}), [state]);
 
 	return (
 		<FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>

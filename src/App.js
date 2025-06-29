@@ -10,7 +10,7 @@ import { FinanceProvider } from "./context/FinanceContext.js";
 import { Layout } from "./components/layout/Layout.js";
 import { Login } from "./pages/Auth/Login.jsx";
 import { Register } from "./pages/Auth/Register.js";
-import { Dashboard } from "./pages/Dashboard/Dashboard.js";
+import { Dashboard } from "./pages/Dashboard/Dashboard.jsx";
 import { Transactions } from "./pages/Transactions/Transactions.jsx";
 import { Accounts } from "./pages/Accounts/Accounts.jsx";
 import { Budget } from "./pages/Budget/Budget.jsx";
