@@ -24,11 +24,9 @@ export class FinanceService {
 		);
 	}
 
-	// Enhanced transaction methods
 	async getTransactions(filters = {}) {
 		const queryParams = new URLSearchParams();
 
-		// Filter out empty values and format properly
 		Object.entries(filters).forEach(([key, value]) => {
 			if (value !== undefined && value !== null && value !== "") {
 				queryParams.append(key, value);
@@ -40,7 +38,6 @@ export class FinanceService {
 			`/transactions${queryString ? "?" + queryString : ""}`
 		);
 
-		// Handle both paginated and non-paginated responses
 		return response.transactions || response;
 	}
 
@@ -49,7 +46,6 @@ export class FinanceService {
 	}
 
 	async createTransaction(transactionData) {
-		// Validate required fields
 		const requiredFields = [
 			"account_id",
 			"description",
@@ -63,7 +59,6 @@ export class FinanceService {
 			}
 		}
 
-		// Format data for API
 		const apiData = {
 			account_id: transactionData.account_id,
 			description: transactionData.description.trim(),
@@ -80,7 +75,6 @@ export class FinanceService {
 	}
 
 	async updateTransaction(transactionId, transactionData) {
-		// Validate required fields
 		const requiredFields = [
 			"account_id",
 			"description",
@@ -94,7 +88,6 @@ export class FinanceService {
 			}
 		}
 
-		// Format data for API
 		const apiData = {
 			account_id: transactionData.account_id,
 			description: transactionData.description.trim(),
@@ -115,7 +108,6 @@ export class FinanceService {
 	}
 
 	async bulkDeleteTransactions(transactionIds) {
-		// Since the API doesn't have a bulk delete endpoint, we'll delete one by one
 		const deletePromises = transactionIds.map((id) =>
 			this.deleteTransaction(id)
 		);
@@ -134,7 +126,6 @@ export class FinanceService {
 		return apiService.get(`/transactions/stats/summary?${queryParams}`);
 	}
 
-	// Category methods
 	async getCategories() {
 		return apiService.get("/categories");
 	}
@@ -151,7 +142,6 @@ export class FinanceService {
 		return apiService.post("/categories", apiData);
 	}
 
-	// Tag methods
 	async getTags() {
 		return apiService.get("/tags");
 	}
@@ -180,7 +170,6 @@ export class FinanceService {
 		return apiService.delete(`/tags/${tagId}`);
 	}
 
-	// Budget methods
 	async getBudgets() {
 		return apiService.get("/budgets");
 	}
@@ -193,7 +182,6 @@ export class FinanceService {
 		return apiService.get(`/budgets/${budgetId}/progress`);
 	}
 
-	// Scheduled transaction methods
 	async getScheduledTransactions() {
 		return apiService.get("/scheduled-transactions");
 	}
@@ -217,7 +205,6 @@ export class FinanceService {
 		return apiService.patch(`/scheduled-transactions/${scheduledId}/toggle`);
 	}
 
-	// Report methods
 	async getIncomeExpenseReport(filters = {}) {
 		const queryParams = new URLSearchParams();
 
@@ -254,7 +241,6 @@ export class FinanceService {
 		return apiService.get("/reports/budget-performance");
 	}
 
-	// Import/Export methods
 	async importTransactions(file) {
 		const formData = new FormData();
 		formData.append("file", file);
@@ -278,11 +264,18 @@ export class FinanceService {
 		return apiService.downloadFile("/import-export/export/budget-report");
 	}
 
-	// Dashboard method
-	// Dashboard method
+	async exportReport(filters = {}) {
+		const queryParams = new URLSearchParams({
+			...filters,
+			format: "pdf",
+		});
+		return apiService.downloadFile(
+			`/import-export/export/report?${queryParams}`
+		);
+	}
+
 	async getDashboard() {
 		const response = await apiService.get("/dashboard");
-		// Extract the data from the API response wrapper
 		return response.data || response;
 	}
 }
