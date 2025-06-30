@@ -15,7 +15,20 @@ export default function AccountFormModal({
 
 	useEffect(() => {
 		if (initialData) {
-			setFormData(initialData);
+			setFormData({
+				name: initialData.name || "",
+				account_type: initialData.account_type || "cash",
+				balance: initialData.balance || 0,
+				is_active:
+					initialData.is_active !== undefined ? initialData.is_active : true,
+			});
+		} else {
+			setFormData({
+				name: "",
+				account_type: "cash",
+				balance: 0,
+				is_active: true,
+			});
 		}
 	}, [initialData]);
 
@@ -30,6 +43,26 @@ export default function AccountFormModal({
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		onSave(formData);
+	};
+
+	const handleClose = () => {
+		if (initialData) {
+			setFormData({
+				name: initialData.name || "",
+				account_type: initialData.account_type || "cash",
+				balance: initialData.balance || 0,
+				is_active:
+					initialData.is_active !== undefined ? initialData.is_active : true,
+			});
+		} else {
+			setFormData({
+				name: "",
+				account_type: "cash",
+				balance: 0,
+				is_active: true,
+			});
+		}
+		onClose();
 	};
 
 	if (!isOpen) return null;
@@ -96,7 +129,7 @@ export default function AccountFormModal({
 					<div className="flex justify-end space-x-2">
 						<button
 							type="button"
-							onClick={onClose}
+							onClick={handleClose}
 							className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
 							Hủy
 						</button>

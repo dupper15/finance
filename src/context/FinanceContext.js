@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useReducer, useMemo, useCallback } from "react";
+import React, {
+	createContext,
+	useContext,
+	useReducer,
+	useMemo,
+	useCallback,
+} from "react";
 import { financeService } from "../services/financeService.js";
 
 const FinanceContext = createContext();
@@ -253,91 +259,115 @@ export function FinanceProvider({ children }) {
 		}
 	}, [setLoading, setError]);
 
-	const createAccount = useCallback(async (accountData) => {
-		try {
-			const newAccount = await financeService.createAccount(accountData);
-			dispatch({ type: "ADD_ACCOUNT", payload: newAccount });
-			return newAccount;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const createAccount = useCallback(
+		async (accountData) => {
+			try {
+				const newAccount = await financeService.createAccount(accountData);
+				dispatch({ type: "ADD_ACCOUNT", payload: newAccount });
+				return newAccount;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
-	const updateAccount = useCallback(async (accountData) => {
-		try {
-			const updatedAccount = await financeService.updateAccount(accountData);
-			dispatch({ type: "UPDATE_ACCOUNT", payload: updatedAccount });
-			return updatedAccount;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const updateAccount = useCallback(
+		async (accountId, accountData) => {
+			try {
+				const updatedAccount = await financeService.updateAccount(
+					accountId,
+					accountData
+				);
+				dispatch({ type: "UPDATE_ACCOUNT", payload: updatedAccount });
+				return updatedAccount;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
-	const deleteAccount = useCallback(async (accountId) => {
-		try {
-			await financeService.deleteAccount(accountId);
-			dispatch({ type: "DELETE_ACCOUNT", payload: accountId });
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const deleteAccount = useCallback(
+		async (accountId) => {
+			try {
+				await financeService.deleteAccount(accountId);
+				dispatch({ type: "DELETE_ACCOUNT", payload: accountId });
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
-	const loadTransactions = useCallback(async (filters = {}) => {
-		try {
-			setLoading("transactions", true);
-			const response = await financeService.getTransactions(filters);
-			dispatch({
-				type: "SET_TRANSACTIONS",
-				payload: response.transactions || response,
-			});
-		} catch (error) {
-			setError(error.message);
-			setLoading("transactions", false);
-		}
-	}, [setLoading, setError]);
+	const loadTransactions = useCallback(
+		async (filters = {}) => {
+			try {
+				setLoading("transactions", true);
+				const response = await financeService.getTransactions(filters);
+				dispatch({
+					type: "SET_TRANSACTIONS",
+					payload: response.transactions || response,
+				});
+			} catch (error) {
+				setError(error.message);
+				setLoading("transactions", false);
+			}
+		},
+		[setLoading, setError]
+	);
 
-	const createTransaction = useCallback(async (transactionData) => {
-		try {
-			const newTransaction = await financeService.createTransaction(
-				transactionData
-			);
-			dispatch({ type: "ADD_TRANSACTION", payload: newTransaction });
-			await loadAccounts();
-			return newTransaction;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError, loadAccounts]);
+	const createTransaction = useCallback(
+		async (transactionData) => {
+			try {
+				const newTransaction = await financeService.createTransaction(
+					transactionData
+				);
+				dispatch({ type: "ADD_TRANSACTION", payload: newTransaction });
+				await loadAccounts();
+				return newTransaction;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError, loadAccounts]
+	);
 
-	const updateTransaction = useCallback(async (transactionId, transactionData) => {
-		try {
-			const updatedTransaction = await financeService.updateTransaction(
-				transactionId,
-				transactionData
-			);
-			dispatch({ type: "UPDATE_TRANSACTION", payload: updatedTransaction });
-			await loadAccounts();
-			return updatedTransaction;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError, loadAccounts]);
+	const updateTransaction = useCallback(
+		async (transactionId, transactionData) => {
+			try {
+				const updatedTransaction = await financeService.updateTransaction(
+					transactionId,
+					transactionData
+				);
+				dispatch({ type: "UPDATE_TRANSACTION", payload: updatedTransaction });
+				await loadAccounts();
+				return updatedTransaction;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError, loadAccounts]
+	);
 
-	const deleteTransaction = useCallback(async (transactionId) => {
-		try {
-			await financeService.deleteTransaction(transactionId);
-			dispatch({ type: "DELETE_TRANSACTION", payload: transactionId });
-			await loadAccounts();
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError, loadAccounts]);
+	const deleteTransaction = useCallback(
+		async (transactionId) => {
+			try {
+				await financeService.deleteTransaction(transactionId);
+				dispatch({ type: "DELETE_TRANSACTION", payload: transactionId });
+				await loadAccounts();
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError, loadAccounts]
+	);
 
 	const loadCategories = useCallback(async () => {
 		try {
@@ -350,16 +380,19 @@ export function FinanceProvider({ children }) {
 		}
 	}, [setLoading, setError]);
 
-	const createCategory = useCallback(async (categoryData) => {
-		try {
-			const newCategory = await financeService.createCategory(categoryData);
-			dispatch({ type: "ADD_CATEGORY", payload: newCategory });
-			return newCategory;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const createCategory = useCallback(
+		async (categoryData) => {
+			try {
+				const newCategory = await financeService.createCategory(categoryData);
+				dispatch({ type: "ADD_CATEGORY", payload: newCategory });
+				return newCategory;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
 	const loadTags = useCallback(async () => {
 		try {
@@ -372,37 +405,46 @@ export function FinanceProvider({ children }) {
 		}
 	}, [setLoading, setError]);
 
-	const createTag = useCallback(async (tagData) => {
-		try {
-			const newTag = await financeService.createTag(tagData);
-			dispatch({ type: "ADD_TAG", payload: newTag });
-			return newTag;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const createTag = useCallback(
+		async (tagData) => {
+			try {
+				const newTag = await financeService.createTag(tagData);
+				dispatch({ type: "ADD_TAG", payload: newTag });
+				return newTag;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
-	const updateTag = useCallback(async (tagId, tagData) => {
-		try {
-			const updatedTag = await financeService.updateTag(tagId, tagData);
-			dispatch({ type: "UPDATE_TAG", payload: updatedTag });
-			return updatedTag;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const updateTag = useCallback(
+		async (tagId, tagData) => {
+			try {
+				const updatedTag = await financeService.updateTag(tagId, tagData);
+				dispatch({ type: "UPDATE_TAG", payload: updatedTag });
+				return updatedTag;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
-	const deleteTag = useCallback(async (tagId) => {
-		try {
-			await financeService.deleteTag(tagId);
-			dispatch({ type: "DELETE_TAG", payload: tagId });
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const deleteTag = useCallback(
+		async (tagId) => {
+			try {
+				await financeService.deleteTag(tagId);
+				dispatch({ type: "DELETE_TAG", payload: tagId });
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
 	const loadBudgets = useCallback(async () => {
 		try {
@@ -415,16 +457,19 @@ export function FinanceProvider({ children }) {
 		}
 	}, [setLoading, setError]);
 
-	const createBudget = useCallback(async (budgetData) => {
-		try {
-			const newBudget = await financeService.createBudget(budgetData);
-			dispatch({ type: "ADD_BUDGET", payload: newBudget });
-			return newBudget;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const createBudget = useCallback(
+		async (budgetData) => {
+			try {
+				const newBudget = await financeService.createBudget(budgetData);
+				dispatch({ type: "ADD_BUDGET", payload: newBudget });
+				return newBudget;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
 	const loadScheduledTransactions = useCallback(async () => {
 		try {
@@ -441,61 +486,76 @@ export function FinanceProvider({ children }) {
 		}
 	}, [setLoading, setError]);
 
-	const createScheduledTransaction = useCallback(async (scheduledData) => {
-		try {
-			const newScheduled = await financeService.createScheduledTransaction(
-				scheduledData
-			);
-			dispatch({ type: "ADD_SCHEDULED_TRANSACTION", payload: newScheduled });
-			return newScheduled;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const createScheduledTransaction = useCallback(
+		async (scheduledData) => {
+			try {
+				const newScheduled = await financeService.createScheduledTransaction(
+					scheduledData
+				);
+				dispatch({ type: "ADD_SCHEDULED_TRANSACTION", payload: newScheduled });
+				return newScheduled;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
-	const updateScheduledTransaction = useCallback(async (scheduledId, scheduledData) => {
-		try {
-			const updatedScheduled = await financeService.updateScheduledTransaction(
-				scheduledId,
-				scheduledData
-			);
-			dispatch({
-				type: "UPDATE_SCHEDULED_TRANSACTION",
-				payload: updatedScheduled,
-			});
-			return updatedScheduled;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const updateScheduledTransaction = useCallback(
+		async (scheduledId, scheduledData) => {
+			try {
+				const updatedScheduled =
+					await financeService.updateScheduledTransaction(
+						scheduledId,
+						scheduledData
+					);
+				dispatch({
+					type: "UPDATE_SCHEDULED_TRANSACTION",
+					payload: updatedScheduled,
+				});
+				return updatedScheduled;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
-	const deleteScheduledTransaction = useCallback(async (scheduledId) => {
-		try {
-			await financeService.deleteScheduledTransaction(scheduledId);
-			dispatch({ type: "DELETE_SCHEDULED_TRANSACTION", payload: scheduledId });
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const deleteScheduledTransaction = useCallback(
+		async (scheduledId) => {
+			try {
+				await financeService.deleteScheduledTransaction(scheduledId);
+				dispatch({
+					type: "DELETE_SCHEDULED_TRANSACTION",
+					payload: scheduledId,
+				});
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
-	const toggleScheduledTransaction = useCallback(async (scheduledId) => {
-		try {
-			const updatedScheduled = await financeService.toggleScheduledTransaction(
-				scheduledId
-			);
-			dispatch({
-				type: "UPDATE_SCHEDULED_TRANSACTION",
-				payload: updatedScheduled,
-			});
-			return updatedScheduled;
-		} catch (error) {
-			setError(error.message);
-			throw error;
-		}
-	}, [setError]);
+	const toggleScheduledTransaction = useCallback(
+		async (scheduledId) => {
+			try {
+				const updatedScheduled =
+					await financeService.toggleScheduledTransaction(scheduledId);
+				dispatch({
+					type: "UPDATE_SCHEDULED_TRANSACTION",
+					payload: updatedScheduled,
+				});
+				return updatedScheduled;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
 
 	const loadDashboard = useCallback(async () => {
 		try {
@@ -516,34 +576,37 @@ export function FinanceProvider({ children }) {
 		dispatch({ type: "RESET_TRANSACTION_FILTERS" });
 	}, []);
 
-	const value = useMemo(() => ({
-		...state,
-		loadAccounts,
-		createAccount,
-		updateAccount,
-		deleteAccount,
-		loadTransactions,
-		createTransaction,
-		updateTransaction,
-		deleteTransaction,
-		loadCategories,
-		createCategory,
-		loadTags,
-		createTag,
-		updateTag,
-		deleteTag,
-		loadBudgets,
-		createBudget,
-		loadScheduledTransactions,
-		createScheduledTransaction,
-		updateScheduledTransaction,
-		deleteScheduledTransaction,
-		toggleScheduledTransaction,
-		loadDashboard,
-		setTransactionFilters,
-		resetTransactionFilters,
-		setError,
-	}), [state]);
+	const value = useMemo(
+		() => ({
+			...state,
+			loadAccounts,
+			createAccount,
+			updateAccount,
+			deleteAccount,
+			loadTransactions,
+			createTransaction,
+			updateTransaction,
+			deleteTransaction,
+			loadCategories,
+			createCategory,
+			loadTags,
+			createTag,
+			updateTag,
+			deleteTag,
+			loadBudgets,
+			createBudget,
+			loadScheduledTransactions,
+			createScheduledTransaction,
+			updateScheduledTransaction,
+			deleteScheduledTransaction,
+			toggleScheduledTransaction,
+			loadDashboard,
+			setTransactionFilters,
+			resetTransactionFilters,
+			setError,
+		}),
+		[state]
+	);
 
 	return (
 		<FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>
