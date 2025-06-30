@@ -177,7 +177,7 @@ export function TransactionList({
                                     <div className="flex justify-center">
                                         {transaction.is_split && (
                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mr-2">
-                        Split
+                        Phân chia
                       </span>
                                         )}
                                         <span className={`text-sm font-medium ${amountDisplay.color}`}>

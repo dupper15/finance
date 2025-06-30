@@ -53,7 +53,7 @@ export function TwoFactorVerification({ onSuccess, onCancel, userEmail }) {
         const token = isBackupCode ? backupCode.trim().toUpperCase() : code.join('');
 
         if (!token || (isBackupCode ? token.length < 6 : token.length !== 6)) {
-            setError(isBackupCode ? 'Please enter a valid backup code' : 'Please enter the complete 6-digit code');
+            setError(isBackupCode ? 'Vui lòng nhập mã dự phòng hợp lệ' : 'Vui lòng nhập đầy đủ mã 6 chữ số');
             return;
         }
 
@@ -94,12 +94,12 @@ export function TwoFactorVerification({ onSuccess, onCancel, userEmail }) {
                                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
-                    <h2 className="text-3xl font-extrabold text-gray-900">Two-Factor Authentication</h2>
+                    <h2 className="text-3xl font-extrabold text-gray-900">Xác thực hai yếu tố</h2>
                     <p className="mt-2 text-sm text-gray-600">
-                        Enter the verification code from your authenticator app
+                        Nhập mã xác minh từ ứng dụng xác thực của bạn
                     </p>
                     {userEmail && (
-                        <p className="text-sm text-gray-500 mt-1">for {userEmail}</p>
+                        <p className="text-sm text-gray-500 mt-1">cho {userEmail}</p>
                     )}
                 </div>
 
@@ -113,7 +113,7 @@ export function TwoFactorVerification({ onSuccess, onCancel, userEmail }) {
                     {!isBackupCode ? (
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-3 text-center">
-                                Verification Code
+                                Mã xác minh
                             </label>
                             <div className="flex justify-center space-x-3" onPaste={handlePaste}>
                                 {code.map((digit, index) => (
@@ -136,13 +136,13 @@ export function TwoFactorVerification({ onSuccess, onCancel, userEmail }) {
                     ) : (
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Backup Code
+                                Mã dự phòng
                             </label>
                             <input
                                 type="text"
                                 value={backupCode}
                                 onChange={(e) => setBackupCode(e.target.value)}
-                                placeholder="Enter your backup code"
+                                placeholder="Nhập mã dự phòng của bạn"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-lg font-mono"
                                 disabled={loading}
                                 autoFocus
@@ -159,7 +159,7 @@ export function TwoFactorVerification({ onSuccess, onCancel, userEmail }) {
                             {loading ? (
                                 <LoadingSpinner size="sm" className="text-white" />
                             ) : (
-                                'Verify'
+                                'Xác minh'
                             )}
                         </button>
 
@@ -169,7 +169,7 @@ export function TwoFactorVerification({ onSuccess, onCancel, userEmail }) {
                             className="w-full text-sm text-blue-600 hover:text-blue-500"
                             disabled={loading}
                         >
-                            {isBackupCode ? 'Use authenticator code instead' : 'Use backup code instead'}
+                            {isBackupCode ? 'Sử dụng mã xác thực thay thế' : 'Sử dụng mã dự phòng thay thế'}
                         </button>
 
                         <button
@@ -178,7 +178,7 @@ export function TwoFactorVerification({ onSuccess, onCancel, userEmail }) {
                             className="w-full text-sm text-gray-600 hover:text-gray-500"
                             disabled={loading}
                         >
-                            Cancel and sign out
+                            Hủy và đăng xuất
                         </button>
                     </div>
                 </form>
@@ -192,7 +192,7 @@ export function TwoFactorVerification({ onSuccess, onCancel, userEmail }) {
                         </div>
                         <div className="ml-3">
                             <p className="text-sm text-blue-700">
-                                Can't access your authenticator? Use a backup code or contact support.
+                                Không thể truy cập ứng dụng xác thực? Sử dụng mã dự phòng hoặc liên hệ hỗ trợ.
                             </p>
                         </div>
                     </div>

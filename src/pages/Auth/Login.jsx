@@ -73,15 +73,15 @@ export function Login() {
                         <h2 className="text-3xl font-extrabold text-gray-900">Controle Finance</h2>
                     </div>
                     <h2 className="mt-6 text-center text-2xl font-bold text-gray-900">
-                        Sign in to your account
+                        Đăng nhập vào tài khoản của bạn
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Or{' '}
+                        Hoặc{' '}
                         <Link
                             to="/register"
                             className="font-medium text-blue-600 hover:text-blue-500"
                         >
-                            create a new account
+                            tạo tài khoản mới
                         </Link>
                     </p>
                 </div>
@@ -105,7 +105,7 @@ export function Login() {
                                 autoComplete="email"
                                 required
                                 className="relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                placeholder="Email address"
+                                placeholder="Địa chỉ email"
                                 value={formData.email}
                                 onChange={handleChange}
                             />
@@ -113,7 +113,7 @@ export function Login() {
 
                         <div className="relative">
                             <label htmlFor="password" className="sr-only">
-                                Password
+                                Mật khẩu
                             </label>
                             <input
                                 id="password"
@@ -122,7 +122,7 @@ export function Login() {
                                 autoComplete="current-password"
                                 required
                                 className="relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm pr-10"
-                                placeholder="Password"
+                                placeholder="Mật khẩu"
                                 value={formData.password}
                                 onChange={handleChange}
                             />
@@ -154,14 +154,8 @@ export function Login() {
                                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                             />
                             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                                Remember me
+                                Ghi nhớ đăng nhập
                             </label>
-                        </div>
-
-                        <div className="text-sm">
-                            <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                                Forgot your password?
-                            </a>
                         </div>
                     </div>
 
@@ -177,21 +171,12 @@ export function Login() {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Signing in...
+                                    Đang đăng nhập...
                                 </div>
                             ) : (
-                                'Sign in'
+                                'Đăng nhập'
                             )}
                         </button>
-                    </div>
-
-                    <div className="text-center">
-                        <p className="text-sm text-gray-600">
-                            New to Controle Finance?{' '}
-                            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
-                                Start your free trial
-                            </Link>
-                        </p>
                     </div>
                 </form>
 
@@ -201,7 +186,7 @@ export function Login() {
                             <div className="w-full border-t border-gray-300" />
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-gray-50 text-gray-500">Secure login with two-factor authentication</span>
+                            <span className="px-2 bg-gray-50 text-gray-500">Đăng nhập bảo mật với xác thực hai yếu tố</span>
                         </div>
                     </div>
                 </div>

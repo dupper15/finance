@@ -27,7 +27,7 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
 
     const handleVerify = async () => {
         if (!verificationCode || verificationCode.length !== 6) {
-            setError('Please enter a valid 6-digit code');
+            setError('Vui lòng nhập mã 6 chữ số hợp lệ');
             return;
         }
 
@@ -50,7 +50,7 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
 
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text).then(() => {
-            alert('Copied to clipboard!');
+            alert('Đã sao chép vào clipboard!');
         });
     };
 
@@ -76,8 +76,8 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
     return (
         <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
             <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Setup Two-Factor Authentication</h2>
-                <p className="text-gray-600 mt-2">Secure your account with an additional layer of protection</p>
+                <h2 className="text-2xl font-bold text-gray-900">Thiết lập xác thực hai yếu tố</h2>
+                <p className="text-gray-600 mt-2">Bảo mật tài khoản của bạn với một lớp bảo vệ bổ sung</p>
             </div>
 
             {error && (
@@ -89,7 +89,7 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
             {step === 1 && (
                 <div className="text-center">
                     <LoadingSpinner size="lg" />
-                    <p className="mt-4 text-gray-600">Setting up two-factor authentication...</p>
+                    <p className="mt-4 text-gray-600">Đang thiết lập xác thực hai yếu tố...</p>
                 </div>
             )}
 
@@ -97,19 +97,19 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
                 <div className="space-y-6">
                     <div className="text-center">
                         <p className="text-sm text-gray-600 mb-4">
-                            Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
+                            Quét mã QR này bằng ứng dụng xác thực của bạn (Google Authenticator, Authy, v.v.)
                         </p>
                         <div className="bg-white p-4 rounded-lg border inline-block">
                             <img
                                 src={setupData.qrCodeUrl}
-                                alt="QR Code for 2FA setup"
+                                alt="Mã QR để thiết lập 2FA"
                                 className="w-48 h-48"
                             />
                         </div>
                     </div>
 
                     <div className="bg-gray-50 p-4 rounded-lg">
-                        <p className="text-sm font-medium text-gray-700 mb-2">Manual entry key:</p>
+                        <p className="text-sm font-medium text-gray-700 mb-2">Khóa nhập thủ công:</p>
                         <div className="flex items-center space-x-2">
                             <code className="flex-1 bg-white p-2 rounded border text-sm font-mono break-all">
                                 {setupData.secret}
@@ -118,14 +118,14 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
                                 onClick={() => copyToClipboard(setupData.secret)}
                                 className="px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
                             >
-                                Copy
+                                Sao chép
                             </button>
                         </div>
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Enter verification code
+                            Nhập mã xác minh
                         </label>
                         <input
                             type="text"
@@ -138,22 +138,22 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
                     </div>
 
                     <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-                        <h4 className="font-medium text-yellow-800 mb-2">Backup Codes</h4>
+                        <h4 className="font-medium text-yellow-800 mb-2">Mã dự phòng</h4>
                         <p className="text-sm text-yellow-700 mb-3">
-                            Save these backup codes in a safe place. You can use them to access your account if you lose your authenticator.
+                            Lưu những mã dự phòng này ở nơi an toàn. Bạn có thể sử dụng chúng để truy cập tài khoản nếu mất ứng dụng xác thực.
                         </p>
                         <div className="flex space-x-2 mb-3">
                             <button
                                 onClick={() => setShowBackupCodes(!showBackupCodes)}
                                 className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded text-sm hover:bg-yellow-200"
                             >
-                                {showBackupCodes ? 'Hide' : 'Show'} Codes
+                                {showBackupCodes ? 'Ẩn' : 'Hiện'} mã
                             </button>
                             <button
                                 onClick={downloadBackupCodes}
                                 className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded text-sm hover:bg-yellow-200"
                             >
-                                Download
+                                Tải xuống
                             </button>
                         </div>
                         {showBackupCodes && (
@@ -174,14 +174,14 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
                             onClick={onCancel}
                             className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                         >
-                            Cancel
+                            Hủy
                         </button>
                         <button
                             onClick={handleVerify}
                             disabled={loading || verificationCode.length !== 6}
                             className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Verifying...' : 'Verify & Enable'}
+                            {loading ? 'Đang xác minh...' : 'Xác minh & Bật'}
                         </button>
                     </div>
                 </div>
@@ -194,15 +194,15 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900">Two-Factor Authentication Enabled!</h3>
+                    <h3 className="text-xl font-semibold text-gray-900">Xác thực hai yếu tố đã được bật!</h3>
                     <p className="text-gray-600">
-                        Your account is now protected with two-factor authentication. Make sure to save your backup codes in a safe place.
+                        Tài khoản của bạn hiện được bảo vệ bằng xác thực hai yếu tố. Hãy chắc chắn lưu mã dự phòng ở nơi an toàn.
                     </p>
                     <button
                         onClick={handleComplete}
                         className="w-full py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700"
                     >
-                        Complete Setup
+                        Hoàn tất thiết lập
                     </button>
                 </div>
             )}

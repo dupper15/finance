@@ -23,7 +23,7 @@ export function TwoFactorSettings() {
             const statusData = await twoFactorAuthService.getStatus();
             setStatus(statusData);
         } catch (error) {
-            setError('Failed to load two-factor authentication status');
+            setError('Không thể tải trạng thái xác thực hai yếu tố');
         } finally {
             setLoading(false);
         }
@@ -36,7 +36,7 @@ export function TwoFactorSettings() {
 
     const handleDisable = async () => {
         if (!password) {
-            setError('Password is required to disable two-factor authentication');
+            setError('Cần mật khẩu để tắt xác thực hai yếu tố');
             return;
         }
 
@@ -57,7 +57,7 @@ export function TwoFactorSettings() {
 
     const handleRegenerateBackupCodes = async () => {
         if (!password) {
-            setError('Password is required to regenerate backup codes');
+            setError('Cần mật khẩu để tạo lại mã dự phòng');
             return;
         }
 
@@ -111,9 +111,9 @@ export function TwoFactorSettings() {
         <div className="bg-white shadow rounded-lg p-6">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-lg font-medium text-gray-900">Two-Factor Authentication</h3>
+                    <h3 className="text-lg font-medium text-gray-900">Xác thực hai yếu tố</h3>
                     <p className="text-sm text-gray-500">
-                        Add an extra layer of security to your account
+                        Thêm một lớp bảo mật bổ sung cho tài khoản của bạn
                     </p>
                 </div>
                 <div className="flex items-center">
@@ -122,7 +122,7 @@ export function TwoFactorSettings() {
                             ? 'bg-green-100 text-green-800'
                             : 'bg-gray-100 text-gray-800'
                     }`}>
-                        {status?.isEnabled ? 'Enabled' : 'Disabled'}
+                        {status?.isEnabled ? 'Đã bật' : 'Đã tắt'}
                     </span>
                 </div>
             </div>
@@ -135,9 +135,9 @@ export function TwoFactorSettings() {
 
             {newBackupCodes && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                    <h4 className="font-medium text-green-800 mb-2">New Backup Codes Generated</h4>
+                    <h4 className="font-medium text-green-800 mb-2">Mã dự phòng mới đã được tạo</h4>
                     <p className="text-sm text-green-700 mb-3">
-                        Save these new backup codes in a safe place. Your old backup codes are no longer valid.
+                        Lưu những mã dự phòng mới này ở nơi an toàn. Các mã dự phòng cũ của bạn không còn hiệu lực.
                     </p>
                     <div className="bg-white p-3 rounded border mb-3">
                         <div className="grid grid-cols-2 gap-2 font-mono text-sm">
@@ -153,13 +153,13 @@ export function TwoFactorSettings() {
                             onClick={() => downloadBackupCodes(newBackupCodes)}
                             className="px-3 py-1 bg-green-100 text-green-800 rounded text-sm hover:bg-green-200"
                         >
-                            Download Codes
+                            Tải xuống mã
                         </button>
                         <button
                             onClick={() => setNewBackupCodes(null)}
                             className="px-3 py-1 bg-gray-100 text-gray-800 rounded text-sm hover:bg-gray-200"
                         >
-                            Close
+                            Đóng
                         </button>
                     </div>
                 </div>
@@ -168,7 +168,7 @@ export function TwoFactorSettings() {
             {!status?.isEnabled ? (
                 <div className="space-y-4">
                     <p className="text-gray-600">
-                        Two-factor authentication is not enabled. Enable it to add an extra layer of security to your account.
+                        Xác thực hai yếu tố chưa được bật. Bật nó để thêm một lớp bảo mật bổ sung cho tài khoản của bạn.
                     </p>
                     <button
                         onClick={() => setShowSetup(true)}
@@ -178,7 +178,7 @@ export function TwoFactorSettings() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
-                        Enable Two-Factor Authentication
+                        Bật xác thực hai yếu tố
                     </button>
                 </div>
             ) : (
@@ -191,38 +191,38 @@ export function TwoFactorSettings() {
                         </div>
                         <div className="ml-3">
                             <h4 className="text-sm font-medium text-green-800">
-                                Two-factor authentication is enabled
+                                Xác thực hai yếu tố đã được bật
                             </h4>
                             <p className="text-sm text-green-700">
-                                Your account is protected with two-factor authentication.
+                                Tài khoản của bạn được bảo vệ bằng xác thực hai yếu tố.
                             </p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <h4 className="font-medium text-gray-900">Backup Codes</h4>
+                            <h4 className="font-medium text-gray-900">Mã dự phòng</h4>
                             <p className="text-sm text-gray-600 mb-2">
-                                You have {status?.backupCodesCount || 0} backup codes remaining
+                                Bạn còn {status?.backupCodesCount || 0} mã dự phòng
                             </p>
                             <button
                                 onClick={() => setShowRegenerateConfirm(true)}
                                 className="text-sm text-blue-600 hover:text-blue-500"
                             >
-                                Regenerate backup codes
+                                Tạo lại mã dự phòng
                             </button>
                         </div>
 
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <h4 className="font-medium text-gray-900">Security</h4>
+                            <h4 className="font-medium text-gray-900">Bảo mật</h4>
                             <p className="text-sm text-gray-600 mb-2">
-                                Enabled on {status?.verifiedAt ? new Date(status.verifiedAt).toLocaleDateString() : 'Unknown'}
+                                Đã bật vào {status?.verifiedAt ? new Date(status.verifiedAt).toLocaleDateString('vi-VN') : 'Không xác định'}
                             </p>
                             <button
                                 onClick={() => setShowDisableConfirm(true)}
                                 className="text-sm text-red-600 hover:text-red-500"
                             >
-                                Disable two-factor authentication
+                                Tắt xác thực hai yếu tố
                             </button>
                         </div>
                     </div>
@@ -233,17 +233,17 @@ export function TwoFactorSettings() {
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">
-                            Disable Two-Factor Authentication
+                            Tắt xác thực hai yếu tố
                         </h3>
                         <p className="text-sm text-gray-600 mb-4">
-                            This will remove the extra security layer from your account. Please enter your password to confirm.
+                            Điều này sẽ loại bỏ lớp bảo mật bổ sung khỏi tài khoản của bạn. Vui lòng nhập mật khẩu để xác nhận.
                         </p>
                         <div className="mb-4">
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter your password"
+                                placeholder="Nhập mật khẩu của bạn"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -257,14 +257,14 @@ export function TwoFactorSettings() {
                                 className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                                 disabled={actionLoading}
                             >
-                                Cancel
+                                Hủy
                             </button>
                             <button
                                 onClick={handleDisable}
                                 disabled={actionLoading || !password}
                                 className="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {actionLoading ? 'Disabling...' : 'Disable'}
+                                {actionLoading ? 'Đang tắt...' : 'Tắt'}
                             </button>
                         </div>
                     </div>
@@ -275,17 +275,17 @@ export function TwoFactorSettings() {
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">
-                            Regenerate Backup Codes
+                            Tạo lại mã dự phòng
                         </h3>
                         <p className="text-sm text-gray-600 mb-4">
-                            This will generate new backup codes and invalidate your current ones. Please enter your password to confirm.
+                            Điều này sẽ tạo ra các mã dự phòng mới và vô hiệu hóa các mã hiện tại của bạn. Vui lòng nhập mật khẩu để xác nhận.
                         </p>
                         <div className="mb-4">
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter your password"
+                                placeholder="Nhập mật khẩu của bạn"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -299,14 +299,14 @@ export function TwoFactorSettings() {
                                 className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                                 disabled={actionLoading}
                             >
-                                Cancel
+                                Hủy
                             </button>
                             <button
                                 onClick={handleRegenerateBackupCodes}
                                 disabled={actionLoading || !password}
                                 className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {actionLoading ? 'Generating...' : 'Regenerate'}
+                                {actionLoading ? 'Đang tạo...' : 'Tạo lại'}
                             </button>
                         </div>
                     </div>
