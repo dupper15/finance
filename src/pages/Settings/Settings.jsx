@@ -1,17 +1,105 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext.js';
-import {TwoFactorSettings} from "../../components/setting/TwoFactorSettings";
+import React, { useState, useEffect } from 'react';
+import { useUser } from '../../context/UserContext.js';
+import { TwoFactorSettings } from '../../components/setting/TwoFactorSettings.jsx';
+import { LoadingSpinner } from '../../components/ui/Loading/LoadingSpinner.js';
 
 export function Settings() {
-    const { user } = useAuth();
+    const { user, updateProfile, changePassword, loading, error: contextError, clearError } = useUser();
     const [activeTab, setActiveTab] = useState('profile');
+    const [profileData, setProfileData] = useState({
+        name: '',
+        phone: ''
+    });
+    const [passwordData, setPasswordData] = useState({
+        current_password: '',
+        new_password: '',
+        confirm_password: ''
+    });
+    const [errors, setErrors] = useState({});
+    const [success, setSuccess] = useState('');
 
     const tabs = [
         { id: 'profile', name: 'Hồ sơ', icon: '👤' },
-        { id: 'security', name: 'Bảo mật', icon: '🔒' },
-        { id: 'preferences', name: 'Tùy chọn', icon: '⚙️' },
-        { id: 'notifications', name: 'Thông báo', icon: '🔔' },
+        { id: 'security', name: 'Bảo mật', icon: '🔒' }
     ];
+
+    useEffect(() => {
+        if (user) {
+            setProfileData({
+                name: user.user_metadata?.name || user.name || '',
+                phone: user.user_metadata?.phone || user.phone || ''
+            });
+        }
+    }, [user]);
+
+    const handleProfileChange = (e) => {
+        const { name, value } = e.target;
+        setProfileData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }));
+        }
+    };
+
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswordData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }));
+        }
+    };
+
+    const handleProfileSubmit = async (e) => {
+        e.preventDefault();
+        setErrors({});
+        setSuccess('');
+        clearError();
+
+        try {
+            await updateProfile(profileData);
+            setSuccess('Cập nhật hồ sơ thành công');
+        } catch (error) {
+            setErrors({ profile: error.message });
+        }
+    };
+
+    const handlePasswordSubmit = async (e) => {
+        e.preventDefault();
+        setErrors({});
+        setSuccess('');
+        clearError();
+
+        if (passwordData.new_password !== passwordData.confirm_password) {
+            setErrors({ confirm_password: 'Mật khẩu xác nhận không khớp' });
+            return;
+        }
+
+        try {
+            await changePassword({
+                current_password: passwordData.current_password,
+                new_password: passwordData.new_password
+            });
+            setPasswordData({
+                current_password: '',
+                new_password: '',
+                confirm_password: ''
+            });
+            setSuccess('Đổi mật khẩu thành công');
+        } catch (error) {
+            setErrors({ password: error.message });
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -40,22 +128,30 @@ export function Settings() {
                 </div>
 
                 <div className="p-6">
+                    {success && (
+                        <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+                            {success}
+                        </div>
+                    )}
+
                     {activeTab === 'profile' && (
                         <div className="space-y-6">
                             <div>
                                 <h3 className="text-lg font-medium text-gray-900 mb-4">Thông tin tài khoản</h3>
-                                <div className="space-y-4">
+                                <div className="bg-gray-50 p-4 rounded-lg space-y-3">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                                        <p className="mt-1 text-gray-900">{user?.email}</p>
+                                        <span className="text-sm font-medium text-gray-700">Email</span>
+                                        <p className="text-sm text-gray-900">{user?.email}</p>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Tên</label>
-                                        <p className="mt-1 text-gray-900">{user?.user_metadata?.name || 'Chưa cập nhật'}</p>
+                                        <span className="text-sm font-medium text-gray-700">Tên</span>
+                                        <p className="text-sm text-gray-900">
+                                            {profileData.name || 'Chưa cập nhật'}
+                                        </p>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Thành viên từ</label>
-                                        <p className="mt-1 text-gray-900">
+                                        <span className="text-sm font-medium text-gray-700">Thành viên từ</span>
+                                        <p className="text-sm text-gray-900">
                                             {user?.created_at ? new Date(user.created_at).toLocaleDateString('vi-VN') : 'Không xác định'}
                                         </p>
                                     </div>
@@ -64,175 +160,145 @@ export function Settings() {
 
                             <div className="border-t pt-6">
                                 <h4 className="text-lg font-medium text-gray-900 mb-4">Cập nhật hồ sơ</h4>
-                                <div className="max-w-md space-y-4">
+                                <form onSubmit={handleProfileSubmit} className="max-w-md space-y-4">
+                                    {errors.profile && (
+                                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                                            {errors.profile}
+                                        </div>
+                                    )}
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Họ và tên</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Họ và tên
+                                        </label>
                                         <input
                                             type="text"
-                                            defaultValue={user?.user_metadata?.name || ''}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            name="name"
+                                            value={profileData.name}
+                                            onChange={handleProfileChange}
+                                            className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Nhập họ và tên"
                                         />
+                                        {errors.name && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                                        )}
                                     </div>
+
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Số điện thoại
+                                        </label>
                                         <input
                                             type="tel"
-                                            defaultValue={user?.user_metadata?.phone || ''}
-                                            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            name="phone"
+                                            value={profileData.phone}
+                                            onChange={handleProfileChange}
+                                            className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Nhập số điện thoại"
                                         />
+                                        {errors.phone && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                                        )}
                                     </div>
-                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+
+                                    <button
+                                        type="submit"
+                                        disabled={loading.update}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center"
+                                    >
+                                        {loading.update && <LoadingSpinner size="sm" className="mr-2" />}
                                         Lưu thay đổi
                                     </button>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     )}
 
                     {activeTab === 'security' && (
-                        <div className="space-y-6">
+                        <div className="space-y-8">
                             <div>
                                 <h3 className="text-lg font-medium text-gray-900 mb-4">Cài đặt bảo mật</h3>
-                            </div>
 
-                            <TwoFactorSettings />
-
-                            <div className="border-t pt-6">
-                                <h4 className="text-lg font-medium text-gray-900 mb-4">Đổi mật khẩu</h4>
-                                <div className="max-w-md space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Mật khẩu hiện tại</label>
-                                        <input
-                                            type="password"
-                                            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        />
+                                <div className="mb-8">
+                                    <h4 className="text-md font-medium text-gray-900 mb-4">Xác thực hai yếu tố</h4>
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                                        <p className="text-sm text-blue-700">
+                                            Xác thực hai yếu tố chưa được bật. Bật nó để thêm một lớp bảo mật bổ sung cho tài khoản của bạn.
+                                        </p>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Mật khẩu mới</label>
-                                        <input
-                                            type="password"
-                                            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Xác nhận mật khẩu mới</label>
-                                        <input
-                                            type="password"
-                                            className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        />
-                                    </div>
-                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-                                        Cập nhật mật khẩu
-                                    </button>
+                                    <TwoFactorSettings />
                                 </div>
                             </div>
 
                             <div className="border-t pt-6">
-                                <h4 className="text-lg font-medium text-gray-900 mb-4">Thao tác tài khoản</h4>
-                                <div className="space-y-3">
-                                    <button className="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700">
-                                        Xuất dữ liệu tài khoản
+                                <h4 className="text-md font-medium text-gray-900 mb-4">Đổi mật khẩu</h4>
+                                <form onSubmit={handlePasswordSubmit} className="max-w-md space-y-4">
+                                    {errors.password && (
+                                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                                            {errors.password}
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Mật khẩu hiện tại
+                                        </label>
+                                        <input
+                                            type="password"
+                                            name="current_password"
+                                            value={passwordData.current_password}
+                                            onChange={handlePasswordChange}
+                                            className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Nhập mật khẩu hiện tại"
+                                        />
+                                        {errors.current_password && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.current_password}</p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Mật khẩu mới
+                                        </label>
+                                        <input
+                                            type="password"
+                                            name="new_password"
+                                            value={passwordData.new_password}
+                                            onChange={handlePasswordChange}
+                                            className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
+                                        />
+                                        {errors.new_password && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.new_password}</p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Xác nhận mật khẩu mới
+                                        </label>
+                                        <input
+                                            type="password"
+                                            name="confirm_password"
+                                            value={passwordData.confirm_password}
+                                            onChange={handlePasswordChange}
+                                            className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Xác nhận mật khẩu mới"
+                                        />
+                                        {errors.confirm_password && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.confirm_password}</p>
+                                        )}
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={loading.update}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center"
+                                    >
+                                        {loading.update && <LoadingSpinner size="sm" className="mr-2" />}
+                                        Đổi mật khẩu
                                     </button>
-                                    <br />
-                                    <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
-                                        Xóa tài khoản
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'preferences' && (
-                        <div className="space-y-6">
-                            <div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">Tùy chọn</h3>
-                            </div>
-
-                            <div className="max-w-md space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Tiền tệ</label>
-                                    <select className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="VND">Việt Nam Đồng (VND)</option>
-                                        <option value="USD">Đô la Mỹ (USD)</option>
-                                        <option value="EUR">Euro (EUR)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Ngôn ngữ</label>
-                                    <select className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="vi">Tiếng Việt</option>
-                                        <option value="en">Tiếng Anh</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Múi giờ</label>
-                                    <select className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="Asia/Ho_Chi_Minh">Hồ Chí Minh (GMT+7)</option>
-                                        <option value="Asia/Bangkok">Bangkok (GMT+7)</option>
-                                        <option value="Asia/Singapore">Singapore (GMT+8)</option>
-                                    </select>
-                                </div>
-                                <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-                                    Lưu tùy chọn
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'notifications' && (
-                        <div className="space-y-6">
-                            <div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">Cài đặt thông báo</h3>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Thông báo qua Email</h4>
-                                        <p className="text-sm text-gray-500">Nhận cập nhật email về tài khoản của bạn</p>
-                                    </div>
-                                    <input
-                                        type="checkbox"
-                                        defaultChecked
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Cảnh báo ngân sách</h4>
-                                        <p className="text-sm text-gray-500">Nhận thông báo khi vượt quá giới hạn ngân sách</p>
-                                    </div>
-                                    <input
-                                        type="checkbox"
-                                        defaultChecked
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Nhắc nhở giao dịch</h4>
-                                        <p className="text-sm text-gray-500">Nhắc nhở về các giao dịch đã lên lịch</p>
-                                    </div>
-                                    <input
-                                        type="checkbox"
-                                        defaultChecked
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-900">Cảnh báo bảo mật</h4>
-                                        <p className="text-sm text-gray-500">Thông báo về bảo mật tài khoản</p>
-                                    </div>
-                                    <input
-                                        type="checkbox"
-                                        defaultChecked
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                </div>
-                                <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-                                    Lưu cài đặt thông báo
-                                </button>
+                                </form>
                             </div>
                         </div>
                     )}

@@ -1,77 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { twoFactorAuthService } from '../../services/twoFactorAuthService.js';
+import React, { useState } from 'react';
+import { useTwoFactorAuth } from '../../hooks/useTwoFactorAuth.js';
 import { TwoFactorSetup } from './TwoFactorSetup.jsx';
 import { LoadingSpinner } from '../ui/Loading/LoadingSpinner.js';
 
 export function TwoFactorSettings() {
-    const [status, setStatus] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const {
+        status,
+        loading,
+        error,
+        disable,
+        regenerateBackupCodes,
+        isEnabled,
+        isSetup,
+        backupCodesCount,
+        refresh
+    } = useTwoFactorAuth();
+
     const [showSetup, setShowSetup] = useState(false);
     const [showDisableConfirm, setShowDisableConfirm] = useState(false);
     const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [actionError, setActionError] = useState('');
     const [actionLoading, setActionLoading] = useState(false);
     const [newBackupCodes, setNewBackupCodes] = useState(null);
 
-    useEffect(() => {
-        loadStatus();
-    }, []);
-
-    const loadStatus = async () => {
-        try {
-            const statusData = await twoFactorAuthService.getStatus();
-            setStatus(statusData);
-        } catch (error) {
-            setError('Không thể tải trạng thái xác thực hai yếu tố');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleSetupComplete = () => {
         setShowSetup(false);
-        loadStatus();
+        refresh();
     };
 
     const handleDisable = async () => {
-        if (!password) {
-            setError('Cần mật khẩu để tắt xác thực hai yếu tố');
+        if (!password.trim()) {
+            setActionError('Cần mật khẩu để tắt xác thực hai yếu tố');
             return;
         }
 
         setActionLoading(true);
-        setError('');
+        setActionError('');
 
         try {
-            await twoFactorAuthService.disable(password);
+            await disable(password);
             setShowDisableConfirm(false);
             setPassword('');
-            loadStatus();
         } catch (error) {
-            setError(error.message);
+            setActionError(error.message);
         } finally {
             setActionLoading(false);
         }
     };
 
     const handleRegenerateBackupCodes = async () => {
-        if (!password) {
-            setError('Cần mật khẩu để tạo lại mã dự phòng');
+        if (!password.trim()) {
+            setActionError('Cần mật khẩu để tạo lại mã dự phòng');
             return;
         }
 
         setActionLoading(true);
-        setError('');
+        setActionError('');
 
         try {
-            const result = await twoFactorAuthService.regenerateBackupCodes(password);
+            const result = await regenerateBackupCodes(password);
             setNewBackupCodes(result.backupCodes);
             setShowRegenerateConfirm(false);
             setPassword('');
-            loadStatus();
         } catch (error) {
-            setError(error.message);
+            setActionError(error.message);
         } finally {
             setActionLoading(false);
         }
@@ -83,148 +76,127 @@ export function TwoFactorSettings() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'controle-finance-backup-codes.txt';
-        document.body.appendChild(a);
+        a.download = 'backup-codes.txt';
         a.click();
-        document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    };
+
+    const copyBackupCodes = (codes) => {
+        const codesText = codes.join('\n');
+        navigator.clipboard.writeText(codesText).then(() => {
+            alert('Đã sao chép mã dự phòng vào clipboard!');
+        });
     };
 
     if (loading) {
         return (
-            <div className="bg-white shadow rounded-lg p-6">
-                <LoadingSpinner size="lg" className="h-32" />
+            <div className="flex items-center justify-center py-8">
+                <LoadingSpinner size="md" />
             </div>
         );
     }
 
-    if (showSetup) {
+    if (error) {
         return (
-            <TwoFactorSetup
-                onComplete={handleSetupComplete}
-                onCancel={() => setShowSetup(false)}
-            />
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                {error}
+            </div>
         );
     }
 
     return (
-        <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h3 className="text-lg font-medium text-gray-900">Xác thực hai yếu tố</h3>
-                    <p className="text-sm text-gray-500">
-                        Thêm một lớp bảo mật bổ sung cho tài khoản của bạn
-                    </p>
-                </div>
-                <div className="flex items-center">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                        status?.isEnabled
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
-                    }`}>
-                        {status?.isEnabled ? 'Đã bật' : 'Đã tắt'}
-                    </span>
-                </div>
-            </div>
-
-            {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-                    {error}
-                </div>
-            )}
-
-            {newBackupCodes && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                    <h4 className="font-medium text-green-800 mb-2">Mã dự phòng mới đã được tạo</h4>
-                    <p className="text-sm text-green-700 mb-3">
-                        Lưu những mã dự phòng mới này ở nơi an toàn. Các mã dự phòng cũ của bạn không còn hiệu lực.
-                    </p>
-                    <div className="bg-white p-3 rounded border mb-3">
-                        <div className="grid grid-cols-2 gap-2 font-mono text-sm">
-                            {newBackupCodes.map((code, index) => (
-                                <div key={index} className="bg-gray-50 p-2 rounded text-center">
-                                    {code}
-                                </div>
-                            ))}
+        <div className="space-y-6">
+            {!isEnabled ? (
+                <div className="border border-gray-200 rounded-lg p-6">
+                    <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0">
+                            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">
+                                Xác thực hai yếu tố chưa được bật
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Bảo vệ tài khoản của bạn bằng cách thêm một lớp bảo mật bổ sung. Bạn sẽ được yêu cầu nhập mã từ ứng dụng xác thực khi đăng nhập.
+                            </p>
+                            <button
+                                onClick={() => setShowSetup(true)}
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                Bật xác thực hai yếu tố
+                            </button>
                         </div>
                     </div>
-                    <div className="flex space-x-2">
-                        <button
-                            onClick={() => downloadBackupCodes(newBackupCodes)}
-                            className="px-3 py-1 bg-green-100 text-green-800 rounded text-sm hover:bg-green-200"
-                        >
-                            Tải xuống mã
-                        </button>
-                        <button
-                            onClick={() => setNewBackupCodes(null)}
-                            className="px-3 py-1 bg-gray-100 text-gray-800 rounded text-sm hover:bg-gray-200"
-                        >
-                            Đóng
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {!status?.isEnabled ? (
-                <div className="space-y-4">
-                    <p className="text-gray-600">
-                        Xác thực hai yếu tố chưa được bật. Bật nó để thêm một lớp bảo mật bổ sung cho tài khoản của bạn.
-                    </p>
-                    <button
-                        onClick={() => setShowSetup(true)}
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    >
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                        Bật xác thực hai yếu tố
-                    </button>
                 </div>
             ) : (
-                <div className="space-y-6">
-                    <div className="flex items-center p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="border border-green-200 rounded-lg p-6 bg-green-50">
+                    <div className="flex items-start space-x-4">
                         <div className="flex-shrink-0">
-                            <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
+                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
                         </div>
-                        <div className="ml-3">
-                            <h4 className="text-sm font-medium text-green-800">
+                        <div className="flex-1">
+                            <h4 className="text-lg font-medium text-green-900 mb-2">
                                 Xác thực hai yếu tố đã được bật
                             </h4>
-                            <p className="text-sm text-green-700">
+                            <p className="text-sm text-green-700 mb-4">
                                 Tài khoản của bạn được bảo vệ bằng xác thực hai yếu tố.
+                                {status?.verifiedAt && (
+                                    <span className="block mt-1">
+                                        Đã bật vào {new Date(status.verifiedAt).toLocaleDateString('vi-VN')}
+                                    </span>
+                                )}
                             </p>
+
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div className="bg-white p-4 rounded-lg border border-green-200">
+                                    <h5 className="font-medium text-green-900">Mã dự phòng</h5>
+                                    <p className="text-sm text-green-700 mb-2">
+                                        Bạn còn {backupCodesCount || 0} mã dự phòng
+                                    </p>
+                                    <button
+                                        onClick={() => setShowRegenerateConfirm(true)}
+                                        className="text-sm text-blue-600 hover:text-blue-500"
+                                    >
+                                        Tạo lại mã dự phòng
+                                    </button>
+                                </div>
+
+                                <div className="bg-white p-4 rounded-lg border border-green-200">
+                                    <h5 className="font-medium text-green-900">Quản lý</h5>
+                                    <p className="text-sm text-green-700 mb-2">
+                                        Tắt xác thực hai yếu tố
+                                    </p>
+                                    <button
+                                        onClick={() => setShowDisableConfirm(true)}
+                                        className="text-sm text-red-600 hover:text-red-500"
+                                    >
+                                        Tắt xác thực hai yếu tố
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
+            )}
 
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <h4 className="font-medium text-gray-900">Mã dự phòng</h4>
-                            <p className="text-sm text-gray-600 mb-2">
-                                Bạn còn {status?.backupCodesCount || 0} mã dự phòng
-                            </p>
-                            <button
-                                onClick={() => setShowRegenerateConfirm(true)}
-                                className="text-sm text-blue-600 hover:text-blue-500"
-                            >
-                                Tạo lại mã dự phòng
-                            </button>
-                        </div>
-
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <h4 className="font-medium text-gray-900">Bảo mật</h4>
-                            <p className="text-sm text-gray-600 mb-2">
-                                Đã bật vào {status?.verifiedAt ? new Date(status.verifiedAt).toLocaleDateString('vi-VN') : 'Không xác định'}
-                            </p>
-                            <button
-                                onClick={() => setShowDisableConfirm(true)}
-                                className="text-sm text-red-600 hover:text-red-500"
-                            >
-                                Tắt xác thực hai yếu tố
-                            </button>
-                        </div>
+            {showSetup && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+                        <TwoFactorSetup
+                            onComplete={handleSetupComplete}
+                            onCancel={() => setShowSetup(false)}
+                        />
                     </div>
                 </div>
             )}
@@ -238,34 +210,47 @@ export function TwoFactorSettings() {
                         <p className="text-sm text-gray-600 mb-4">
                             Điều này sẽ loại bỏ lớp bảo mật bổ sung khỏi tài khoản của bạn. Vui lòng nhập mật khẩu để xác nhận.
                         </p>
-                        <div className="mb-4">
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Nhập mật khẩu của bạn"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-                        <div className="flex space-x-3">
-                            <button
-                                onClick={() => {
-                                    setShowDisableConfirm(false);
-                                    setPassword('');
-                                    setError('');
-                                }}
-                                className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                                disabled={actionLoading}
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                onClick={handleDisable}
-                                disabled={actionLoading || !password}
-                                className="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {actionLoading ? 'Đang tắt...' : 'Tắt'}
-                            </button>
+
+                        {actionError && (
+                            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded">
+                                {actionError}
+                            </div>
+                        )}
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Mật khẩu
+                                </label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Nhập mật khẩu của bạn"
+                                />
+                            </div>
+
+                            <div className="flex justify-end space-x-3">
+                                <button
+                                    onClick={() => {
+                                        setShowDisableConfirm(false);
+                                        setPassword('');
+                                        setActionError('');
+                                    }}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    onClick={handleDisable}
+                                    disabled={actionLoading}
+                                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {actionLoading && <LoadingSpinner size="sm" className="mr-2" />}
+                                    Tắt 2FA
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -278,35 +263,94 @@ export function TwoFactorSettings() {
                             Tạo lại mã dự phòng
                         </h3>
                         <p className="text-sm text-gray-600 mb-4">
-                            Điều này sẽ tạo ra các mã dự phòng mới và vô hiệu hóa các mã hiện tại của bạn. Vui lòng nhập mật khẩu để xác nhận.
+                            Các mã dự phòng hiện tại sẽ không còn hoạt động. Vui lòng nhập mật khẩu để tạo mã mới.
                         </p>
-                        <div className="mb-4">
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Nhập mật khẩu của bạn"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            />
+
+                        {actionError && (
+                            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded">
+                                {actionError}
+                            </div>
+                        )}
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Mật khẩu
+                                </label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Nhập mật khẩu của bạn"
+                                />
+                            </div>
+
+                            <div className="flex justify-end space-x-3">
+                                <button
+                                    onClick={() => {
+                                        setShowRegenerateConfirm(false);
+                                        setPassword('');
+                                        setActionError('');
+                                    }}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    onClick={handleRegenerateBackupCodes}
+                                    disabled={actionLoading}
+                                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    {actionLoading && <LoadingSpinner size="sm" className="mr-2" />}
+                                    Tạo lại mã
+                                </button>
+                            </div>
                         </div>
-                        <div className="flex space-x-3">
+                    </div>
+                </div>
+            )}
+
+            {newBackupCodes && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                            Mã dự phòng mới
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Lưu các mã này ở nơi an toàn. Bạn có thể sử dụng chúng để truy cập tài khoản nếu mất thiết bị xác thực.
+                        </p>
+
+                        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div className="grid grid-cols-2 gap-2 text-sm font-mono">
+                                {newBackupCodes.map((code, index) => (
+                                    <div key={index} className="text-center py-1">
+                                        {code}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-between">
+                            <div className="space-x-2">
+                                <button
+                                    onClick={() => downloadBackupCodes(newBackupCodes)}
+                                    className="text-sm text-blue-600 hover:text-blue-500"
+                                >
+                                    Tải xuống
+                                </button>
+                                <button
+                                    onClick={() => copyBackupCodes(newBackupCodes)}
+                                    className="text-sm text-blue-600 hover:text-blue-500"
+                                >
+                                    Sao chép
+                                </button>
+                            </div>
                             <button
-                                onClick={() => {
-                                    setShowRegenerateConfirm(false);
-                                    setPassword('');
-                                    setError('');
-                                }}
-                                className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                                disabled={actionLoading}
+                                onClick={() => setNewBackupCodes(null)}
+                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
                             >
-                                Hủy
-                            </button>
-                            <button
-                                onClick={handleRegenerateBackupCodes}
-                                disabled={actionLoading || !password}
-                                className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {actionLoading ? 'Đang tạo...' : 'Tạo lại'}
+                                Đóng
                             </button>
                         </div>
                     </div>

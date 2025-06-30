@@ -10,6 +10,12 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
     const [verificationCode, setVerificationCode] = useState('');
     const [showBackupCodes, setShowBackupCodes] = useState(false);
 
+    useEffect(() => {
+        if (step === 1) {
+            handleSetup();
+        }
+    }, []);
+
     const handleSetup = async () => {
         setLoading(true);
         setError('');
@@ -55,6 +61,8 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
     };
 
     const downloadBackupCodes = () => {
+        if (!setupData?.backupCodes) return;
+
         const codesText = setupData.backupCodes.join('\n');
         const blob = new Blob([codesText], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
@@ -67,17 +75,18 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
         URL.revokeObjectURL(url);
     };
 
-    useEffect(() => {
-        if (step === 1) {
-            handleSetup();
-        }
-    }, []);
-
     return (
-        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
-            <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Thiết lập xác thực hai yếu tố</h2>
-                <p className="text-gray-600 mt-2">Bảo mật tài khoản của bạn với một lớp bảo vệ bổ sung</p>
+        <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Thiết lập xác thực hai yếu tố</h2>
+                <button
+                    onClick={onCancel}
+                    className="text-gray-400 hover:text-gray-600"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
             {error && (
@@ -87,7 +96,7 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
             )}
 
             {step === 1 && (
-                <div className="text-center">
+                <div className="text-center py-8">
                     <LoadingSpinner size="lg" />
                     <p className="mt-4 text-gray-600">Đang thiết lập xác thực hai yếu tố...</p>
                 </div>
@@ -147,7 +156,13 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
                                 onClick={() => setShowBackupCodes(!showBackupCodes)}
                                 className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded text-sm hover:bg-yellow-200"
                             >
-                                {showBackupCodes ? 'Ẩn' : 'Hiện'} mã
+                                {showBackupCodes ? 'Ẩn mã' : 'Hiện mã'}
+                            </button>
+                            <button
+                                onClick={() => copyToClipboard(setupData.backupCodes.join('\n'))}
+                                className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded text-sm hover:bg-yellow-200"
+                            >
+                                Sao chép
                             </button>
                             <button
                                 onClick={downloadBackupCodes}
@@ -158,9 +173,9 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
                         </div>
                         {showBackupCodes && (
                             <div className="bg-white p-3 rounded border">
-                                <div className="grid grid-cols-2 gap-2 font-mono text-sm">
+                                <div className="grid grid-cols-2 gap-2 text-sm font-mono">
                                     {setupData.backupCodes.map((code, index) => (
-                                        <div key={index} className="bg-gray-50 p-2 rounded text-center">
+                                        <div key={index} className="text-center py-1">
                                             {code}
                                         </div>
                                     ))}
@@ -172,15 +187,16 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
                     <div className="flex space-x-3">
                         <button
                             onClick={onCancel}
-                            className="flex-1 py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                            className="flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
                         >
                             Hủy
                         </button>
                         <button
                             onClick={handleVerify}
-                            disabled={loading || verificationCode.length !== 6}
-                            className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={loading || !verificationCode || verificationCode.length !== 6}
+                            className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
                         >
+                            {loading && <LoadingSpinner size="sm" className="mr-2" />}
                             {loading ? 'Đang xác minh...' : 'Xác minh & Bật'}
                         </button>
                     </div>
@@ -188,7 +204,7 @@ export function TwoFactorSetup({ onComplete, onCancel }) {
             )}
 
             {step === 3 && (
-                <div className="text-center space-y-4">
+                <div className="text-center space-y-4 py-4">
                     <div className="text-green-600">
                         <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
