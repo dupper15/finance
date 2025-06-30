@@ -3,9 +3,12 @@ import { apiService } from "./api.js";
 export class ReportService {
   async getTransactionByAccount(data) {
     const { accountId } = data;
+    console.log("fd", accountId);
     try {
-      const response = await apiService.get(`/transactions?${accountId}`);
-      return response.transactions;
+      const response = await apiService.get(
+        `/transactions/account?id=${accountId}`
+      );
+      return response;
     } catch (error) {
       throw new Error(error.message || "Registration failed");
     }

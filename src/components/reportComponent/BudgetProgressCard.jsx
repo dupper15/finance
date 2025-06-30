@@ -1,12 +1,23 @@
 const BudgetProgressCard = ({ item }) => {
-  const percent = Math.round((item.totalSpent / item.totalBudget) * 100);
-  const status = item.status;
-
+  const { totalSpent, totalBudget, type, status, name } = item;
+  const percent = Math.round((totalSpent / totalBudget) * 100);
+  const isIncome = type === "income";
+  const isAchieved = isIncome && totalSpent >= totalBudget;
+  console.log("BudgetProgressCard item:", item);
   return (
-    <div className='p-4 bg-white rounded-lg shadow space-y-3'>
+    <div className='p-4 bg-white rounded-lg shadow space-y-3 border-l-4 border-blue-500 relative'>
       <div className='flex justify-between items-center'>
-        <h3 className='font-semibold text-gray-800'>{item.name}</h3>
-        {status && (
+        <h3 className='font-semibold text-gray-800'>
+          {name}{" "}
+          {isIncome && (
+            <span className='text-xs text-green-600'>(Thu nhập)</span>
+          )}
+          {!isIncome && (
+            <span className='text-xs text-red-600'>(Chi tiêu)</span>
+          )}
+        </h3>
+
+        {status && !isIncome && (
           <span
             className={`text-sm font-semibold flex items-center gap-1 ${status.color}`}>
             {status.icon} {status.label}
@@ -15,17 +26,21 @@ const BudgetProgressCard = ({ item }) => {
       </div>
 
       <div className='text-sm text-gray-600'>
-        Ngân sách: {item.totalBudget.toLocaleString()} VNĐ
+        Mục tiêu: {totalBudget.toLocaleString()} VNĐ
       </div>
       <div className='text-sm text-gray-600'>
-        Đã chi: {item.totalSpent.toLocaleString()} VNĐ
+        {isIncome ? "Đã đạt" : "Đã chi"}: {totalSpent.toLocaleString()} VNĐ
       </div>
 
       <div>
         <div className='w-full bg-gray-200 rounded-full h-3 relative overflow-hidden'>
           <div
             className={`h-full rounded-full ${
-              percent < 90
+              isIncome
+                ? percent >= 100
+                  ? "bg-green-500"
+                  : "bg-yellow-500"
+                : percent < 90
                 ? "bg-green-500"
                 : percent <= 100
                 ? "bg-yellow-500"
@@ -33,7 +48,7 @@ const BudgetProgressCard = ({ item }) => {
             }`}
             style={{ width: `${Math.min(percent, 100)}%` }}></div>
 
-          {percent > 100 && (
+          {!isIncome && percent > 100 && (
             <div
               className='absolute top-0 right-0 h-full bg-red-700 rounded-full'
               style={{ width: `${percent - 100}%`, minWidth: "4px" }}
@@ -43,6 +58,12 @@ const BudgetProgressCard = ({ item }) => {
 
         <div className='text-xs text-right text-gray-500 mt-1'>{percent}%</div>
       </div>
+
+      {isAchieved && (
+        <div className='absolute top-2 right-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full shadow animate-bounce'>
+          🎉 Đạt mục tiêu!
+        </div>
+      )}
     </div>
   );
 };
