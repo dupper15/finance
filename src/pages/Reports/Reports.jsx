@@ -98,7 +98,7 @@ export function Reports() {
     });
   }, [selectedMonth, selectedYear]);
 
-  const handleExportReport = async () => {
+  const handleExportReport = async (format = 'pdf') => {
     try {
       const filters = {
         month: selectedMonth,
@@ -109,7 +109,7 @@ export function Reports() {
         filters.account_id = selectedAccount.account_id;
       }
 
-      await exportReport(filters);
+      await exportReport(filters, format);
     } catch (error) {
       console.error('Error exporting report:', error);
     }

@@ -5,18 +5,22 @@ export function useReportExport() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const exportReport = useCallback(async (filters = {}) => {
+    const exportReport = useCallback(async (filters = {}, format = 'pdf') => {
         try {
             setLoading(true);
             setError(null);
 
-            const blob = await financeService.exportReport(filters);
+            const blob = await financeService.exportReport({...filters, format});
 
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = `bao-cao-tai-chinh-${filters.month || 'all'}-${filters.year || new Date().getFullYear()}.pdf`;
+
+            const fileExtension = format === 'excel' ? 'xlsx' : 'pdf';
+            const formatText = format === 'excel' ? 'du-lieu' : 'bieu-do';
+            a.download = `bao-cao-tai-chinh-${formatText}-${filters.month || 'all'}-${filters.year || new Date().getFullYear()}.${fileExtension}`;
+
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
