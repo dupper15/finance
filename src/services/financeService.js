@@ -9,8 +9,9 @@ export class FinanceService {
 		return apiService.post("/accounts", accountData);
 	}
 
-	async updateAccount(accountData) {
-		return apiService.put(`/accounts/${accountData.account_id}`, accountData);
+	async updateAccount(accountId, accountData) {
+		const { account_id, ...cleanData } = accountData;
+		return apiService.put(`/accounts/${accountId}`, cleanData);
 	}
 
 	async deleteAccount(accountId) {

@@ -54,7 +54,15 @@ export function Accounts() {
 
 		try {
 			if (selectedAccount) {
-				await updateAccount(data.account_id, payload);
+				console.log(
+					"Selected Account:",
+					selectedAccount,
+					"Selected Account ID:",
+					selectedAccount.account_id,
+					"Form Data:",
+					data
+				);
+				await updateAccount(selectedAccount.account_id, payload);
 			} else {
 				await createAccount(payload);
 			}
