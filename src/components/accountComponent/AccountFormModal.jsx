@@ -106,7 +106,7 @@ export default function AccountFormModal({
 					</div>
 					<div>
 						<label className="block text-sm font-medium text-gray-700">
-							Số dư ban đầu
+							Số dư
 						</label>
 						<input
 							type="number"
