@@ -43,6 +43,20 @@ class ApiService {
         return headers;
     }
 
+    getFileHeaders() {
+        const headers = {};
+
+        if (this.token) {
+            headers.Authorization = `Bearer ${this.token}`;
+        }
+
+        if (this.twoFactorToken) {
+            headers['X-2FA-Token'] = this.twoFactorToken;
+        }
+
+        return headers;
+    }
+
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
         const config = {
@@ -122,6 +136,96 @@ class ApiService {
             method: 'DELETE',
             ...options,
         });
+    }
+
+    async uploadFile(endpoint, formData, options = {}) {
+        const url = `${this.baseURL}${endpoint}`;
+        const config = {
+            method: 'POST',
+            body: formData,
+            headers: {
+                ...this.getFileHeaders(),
+                ...options.headers,
+            },
+            ...options,
+        };
+
+        try {
+            const response = await fetch(url, config);
+            const data = await response.json();
+
+            if (!response.ok) {
+                if (response.status === 403 && data.requiresTwoFactor) {
+                    const error = new Error(data.error || 'Two-factor authentication required');
+                    error.requiresTwoFactor = true;
+                    error.status = 403;
+                    error.user = data.user;
+                    error.session = data.session;
+                    throw error;
+                }
+
+                if (response.status === 401) {
+                    this.setToken(null);
+                    this.clearTwoFactorToken();
+                    window.location.href = '/login';
+                    return;
+                }
+
+                throw new Error(data.error || data.message || 'Upload failed');
+            }
+
+            return data;
+        } catch (error) {
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Network error. Please check your connection.');
+            }
+            throw error;
+        }
+    }
+
+    async downloadFile(endpoint, options = {}) {
+        const url = `${this.baseURL}${endpoint}`;
+        const config = {
+            method: 'GET',
+            headers: {
+                ...this.getFileHeaders(),
+                ...options.headers,
+            },
+            ...options,
+        };
+
+        try {
+            const response = await fetch(url, config);
+
+            if (!response.ok) {
+                const data = await response.json();
+
+                if (response.status === 403 && data.requiresTwoFactor) {
+                    const error = new Error(data.error || 'Two-factor authentication required');
+                    error.requiresTwoFactor = true;
+                    error.status = 403;
+                    error.user = data.user;
+                    error.session = data.session;
+                    throw error;
+                }
+
+                if (response.status === 401) {
+                    this.setToken(null);
+                    this.clearTwoFactorToken();
+                    window.location.href = '/login';
+                    return;
+                }
+
+                throw new Error(data.error || data.message || 'Download failed');
+            }
+
+            return await response.blob();
+        } catch (error) {
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Network error. Please check your connection.');
+            }
+            throw error;
+        }
     }
 }
 

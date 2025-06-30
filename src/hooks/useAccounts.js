@@ -1,29 +1,31 @@
-
-import { useEffect } from 'react';
-import { useFinance } from '../context/FinanceContext.js';
+import { useEffect, useRef } from "react";
+import { useFinance } from "../context/FinanceContext.js";
 
 export function useAccounts() {
-  const {
-    accounts,
-    loading,
-    loadAccounts,
-    createAccount,
-    updateAccount,
-    deleteAccount,
-  } = useFinance();
+	const {
+		accounts,
+		loading,
+		loadAccounts,
+		createAccount,
+		updateAccount,
+		deleteAccount,
+	} = useFinance();
 
-  useEffect(() => {
-    if (accounts.length === 0 && !loading.accounts) {
-      loadAccounts();
-    }
-  }, [accounts.length, loading.accounts]);
+	const hasLoadedOnce = useRef(false);
 
-  return {
-    accounts,
-    loading: loading.accounts,
-    createAccount,
-    updateAccount,
-    deleteAccount,
-    refetch: loadAccounts,
-  };
+	useEffect(() => {
+		if (!hasLoadedOnce.current && !loading.accounts && accounts.length === 0) {
+			hasLoadedOnce.current = true;
+			loadAccounts();
+		}
+	}, [accounts.length, loading.accounts]);
+
+	return {
+		accounts,
+		loading: loading.accounts,
+		createAccount,
+		updateAccount,
+		deleteAccount,
+		refetch: loadAccounts,
+	};
 }

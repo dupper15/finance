@@ -111,41 +111,36 @@ export function Register() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
-                <div className="text-center">
-                    <div className="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center mb-6">
-                        <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                        </svg>
+                <div>
+                    <div className="text-center mb-8">
+                        <div className="bg-blue-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                            </svg>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-gray-900">Controle Finance</h2>
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900">
+                    <h2 className="mt-6 text-center text-2xl font-bold text-gray-900">
                         Tạo tài khoản mới
                     </h2>
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-2 text-center text-sm text-gray-600">
                         Bắt đầu quản lý tài chính cá nhân của bạn
                     </p>
                 </div>
 
-                <form className="mt-8 space-y-6 bg-white p-8 rounded-xl shadow-lg" onSubmit={handleSubmit}>
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     {error && (
-                        <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded">
-                            <div className="flex">
-                                <div className="flex-shrink-0">
-                                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div className="ml-3">
-                                    <p className="text-sm text-red-700">{error}</p>
-                                </div>
-                            </div>
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                            {error}
                         </div>
                     )}
 
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="name" className="sr-only">
                                 Họ và tên
                             </label>
                             <input
@@ -154,9 +149,9 @@ export function Register() {
                                 type="text"
                                 autoComplete="name"
                                 required
-                                className={`appearance-none relative block w-full px-3 py-3 border ${
-                                    validationErrors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                                } placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:z-10 sm:text-sm transition-colors`}
+                                className={`relative block w-full px-3 py-3 border placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm ${
+                                    validationErrors.name ? 'border-red-300' : 'border-gray-300'
+                                }`}
                                 placeholder="Nhập họ và tên của bạn"
                                 value={formData.name}
                                 onChange={handleChange}
@@ -172,7 +167,7 @@ export function Register() {
                         </div>
 
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="email" className="sr-only">
                                 Địa chỉ email
                             </label>
                             <input
@@ -181,9 +176,9 @@ export function Register() {
                                 type="email"
                                 autoComplete="email"
                                 required
-                                className={`appearance-none relative block w-full px-3 py-3 border ${
-                                    validationErrors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                                } placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:z-10 sm:text-sm transition-colors`}
+                                className={`relative block w-full px-3 py-3 border placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm ${
+                                    validationErrors.email ? 'border-red-300' : 'border-gray-300'
+                                }`}
                                 placeholder="example@email.com"
                                 value={formData.email}
                                 onChange={handleChange}
@@ -199,7 +194,7 @@ export function Register() {
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="password" className="sr-only">
                                 Mật khẩu
                             </label>
                             <div className="relative">
@@ -209,9 +204,9 @@ export function Register() {
                                     type={showPassword ? 'text' : 'password'}
                                     autoComplete="new-password"
                                     required
-                                    className={`appearance-none relative block w-full px-3 py-3 pr-10 border ${
-                                        validationErrors.password ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                                    } placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:z-10 sm:text-sm transition-colors`}
+                                    className={`relative block w-full px-3 py-3 pr-10 border placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm ${
+                                        validationErrors.password ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                     placeholder="Tối thiểu 6 ký tự"
                                     value={formData.password}
                                     onChange={handleChange}
@@ -264,7 +259,7 @@ export function Register() {
                         </div>
 
                         <div>
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="confirmPassword" className="sr-only">
                                 Xác nhận mật khẩu
                             </label>
                             <div className="relative">
@@ -274,9 +269,9 @@ export function Register() {
                                     type={showConfirmPassword ? 'text' : 'password'}
                                     autoComplete="new-password"
                                     required
-                                    className={`appearance-none relative block w-full px-3 py-3 pr-10 border ${
-                                        validationErrors.confirmPassword ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                                    } placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:z-10 sm:text-sm transition-colors`}
+                                    className={`relative block w-full px-3 py-3 pr-10 border placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm ${
+                                        validationErrors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                     placeholder="Nhập lại mật khẩu"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
@@ -319,7 +314,7 @@ export function Register() {
                         </div>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="flex items-center justify-between">
                         <div className="flex items-start">
                             <input
                                 id="agreeToTerms"
@@ -341,21 +336,21 @@ export function Register() {
                                 </a>
                             </label>
                         </div>
-                        {validationErrors.agreeToTerms && (
-                            <p className="text-sm text-red-600 flex items-center">
-                                <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                                {validationErrors.agreeToTerms}
-                            </p>
-                        )}
                     </div>
+                    {validationErrors.agreeToTerms && (
+                        <p className="text-sm text-red-600 flex items-center">
+                            <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            {validationErrors.agreeToTerms}
+                        </p>
+                    )}
 
                     <div>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? (
                                 <div className="flex items-center">
@@ -376,13 +371,24 @@ export function Register() {
                             Đã có tài khoản?{' '}
                             <Link
                                 to="/login"
-                                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                                className="font-medium text-blue-600 hover:text-blue-500"
                             >
                                 Đăng nhập ngay
                             </Link>
                         </p>
                     </div>
                 </form>
+
+                <div className="mt-6">
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-300" />
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-2 bg-gray-50 text-gray-500">Đăng nhập bảo mật với xác thực hai yếu tố</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
