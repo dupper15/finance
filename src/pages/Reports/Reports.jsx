@@ -1,8 +1,3 @@
-import {
-  FaCheckCircle,
-  FaExclamationCircle,
-  FaTimesCircle,
-} from "react-icons/fa";
 import Summary from "../../components/reportComponent/Summary";
 import AccountComparisonChart from "./AccountComparisonChart";
 import { useEffect, useState } from "react";
@@ -38,6 +33,7 @@ export function Reports() {
     const timer = setTimeout(() => {
       if (userId) {
         getBudgetsMutation.mutate({
+          account_id: selectedAccount?.account_id,
           month: selectedMonth,
           year: selectedYear,
           user_id: userId,
@@ -46,7 +42,7 @@ export function Reports() {
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [userId, selectedMonth, selectedYear]);
+  }, [userId, selectedMonth, selectedYear, selectedAccount]);
   const getAccountMutation = useMutation({
     mutationFn: budgetService.getAccount,
     onSuccess: (data) => {
@@ -92,11 +88,12 @@ export function Reports() {
 
   useEffect(() => {
     getBudgetsMutation.mutate({
+      account_id: selectedAccount?.account_id,
       month: selectedMonth,
       year: selectedYear,
       user_id: userId,
     });
-  }, [selectedMonth, selectedYear]);
+  }, [selectedMonth, selectedYear, selectedAccount]);
 
   const handleExportReport = async () => {
     try {

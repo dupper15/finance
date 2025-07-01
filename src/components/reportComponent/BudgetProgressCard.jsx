@@ -3,7 +3,6 @@ const BudgetProgressCard = ({ item }) => {
   const percent = Math.round((totalSpent / totalBudget) * 100);
   const isIncome = type === "income";
   const isAchieved = isIncome && totalSpent >= totalBudget;
-  console.log("BudgetProgressCard item:", item);
   return (
     <div className='p-4 bg-white rounded-lg shadow space-y-3 border-l-4 border-blue-500 relative'>
       <div className='flex justify-between items-center'>
