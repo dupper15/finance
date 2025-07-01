@@ -88,7 +88,8 @@ export function Settings() {
         try {
             await changePassword({
                 current_password: passwordData.current_password,
-                new_password: passwordData.new_password
+                new_password: passwordData.new_password,
+                confirm_password: passwordData.confirm_password
             });
             setPasswordData({
                 current_password: '',
