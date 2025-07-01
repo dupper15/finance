@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import { useAuth } from '../../context/AuthContext.js';
-import { formatCurrency } from '../../utils/formatters/currency.js';
-import { useFinance } from '../../context/FinanceContext.js';
 import {useDashboard} from "../../hooks/useDashboard";
+import React, { useState } from "react";
+import { useAuth } from "../../context/AuthContext.js";
+import { formatCurrency } from "../../utils/formatters/currency.js";
+import { useFinance } from "../../context/FinanceContext.js";
+import { useNavigate } from "react-router-dom";
 
 export function Header({ onMenuClick }) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -12,6 +13,12 @@ export function Header({ onMenuClick }) {
     const { dashboardData} = useDashboard();
 
     const totalBalance = dashboardData?.totalBalance || 0;
+    const navigate = useNavigate();
+
+    const goSettings = () => {
+        navigate("/settings");
+    };
+
 
     const handleLogout = async () => {
         try {
@@ -83,40 +90,38 @@ export function Header({ onMenuClick }) {
               </span>
                         </button>
 
-                        {dropdownOpen && (
-                            <div className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                                <button
-                                    onClick={() => {
-                                        setDropdownOpen(false);
-                                        // Navigate to profile/settings
-                                    }}
-                                    className="block w-full text-left px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
-                                >
-                                    Hồ sơ
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setDropdownOpen(false);
-                                        // Navigate to settings
-                                    }}
-                                    className="block w-full text-left px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
-                                >
-                                    Cài đặt
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setDropdownOpen(false);
-                                        handleLogout();
-                                    }}
-                                    className="block w-full text-left px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
-                                >
-                                    Đăng xuất
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+						{dropdownOpen && (
+							<div className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+								{/* <button
+									onClick={() => {
+										setDropdownOpen(false);
+										// Navigate to profile/settings
+									}}
+									className="block w-full text-left px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50">
+									Hồ sơ
+								</button> */}
+								<button
+									onClick={() => {
+										goSettings();
+										setDropdownOpen(false);
+										// Navigate to settings
+									}}
+									className="block w-full text-left px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50">
+									Cài đặt
+								</button>
+								<button
+									onClick={() => {
+										setDropdownOpen(false);
+										handleLogout();
+									}}
+									className="block w-full text-left px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50">
+									Đăng xuất
+								</button>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
