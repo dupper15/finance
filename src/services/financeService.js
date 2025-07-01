@@ -267,7 +267,7 @@ export class FinanceService {
 	async exportReport(filters = {}) {
 		const queryParams = new URLSearchParams({
 			...filters,
-			format: "pdf",
+			format: filters.format || 'pdf',
 		});
 		return apiService.downloadFile(
 			`/import-export/export/report?${queryParams}`
