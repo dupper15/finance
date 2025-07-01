@@ -4,7 +4,7 @@ import { formatCurrency } from "../../utils/formatters/currency";
 export function TransactionSummaryCards({ summary, accountsData }) {
 	const cards = [
 		{
-			title: "Thu nhập tháng 6 2025",
+			title: "Tổng thu nhập",
 			value: summary.totalIncome,
 			icon: (
 				<svg
@@ -25,7 +25,7 @@ export function TransactionSummaryCards({ summary, accountsData }) {
 			changeType: "increase",
 		},
 		{
-			title: "Chi tiêu tháng 6 2025",
+			title: "Tổng chi tiêu",
 			value: summary.totalExpenses,
 			icon: (
 				<svg
