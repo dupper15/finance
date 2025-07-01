@@ -112,6 +112,7 @@ export function Budget() {
     mutationFn: budgetService.getBudget,
     onSuccess: (data) => {
       setData(data);
+      console.log("hêllo", data);
     },
     onError: (error) => {
       console.error("Error fetching budgets:", error);
@@ -219,12 +220,14 @@ export function Budget() {
         />
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <IncomeBudget
+            selectedAccount={selectedAccount}
             getBudgets={getBudgets}
             totalIncome={totalIncome}
             data={data}
             CATEGORY_STYLES={CATEGORY_STYLES}
           />
           <OutcomeBudget
+            selectedAccount={selectedAccount}
             getBudgets={getBudgets}
             data={data}
             totalExpense={totalExpenses}
@@ -238,11 +241,11 @@ export function Budget() {
             COLORS={COLORS}
           />
           <OutcomeBudgetChart
+            selectedAccount={selectedAccount}
             expenseChartData={expenseChartData}
             COLORS={COLORS}
           />
         </div>
-        <SavingGoals goals={savingGoals} />
       </div>
       {isShowModal && (
         <AddBudgetForm

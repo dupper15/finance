@@ -2,7 +2,14 @@ import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { budgetService } from "../../services/budgetService";
 
-const IncomeModal = ({ isOpen, onClose, type, defaultData, getBudgets }) => {
+const IncomeModal = ({
+  selectedAccount,
+  isOpen,
+  onClose,
+  type,
+  defaultData,
+  getBudgets,
+}) => {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [duration, setDuration] = useState("monthly");
@@ -49,14 +56,15 @@ const IncomeModal = ({ isOpen, onClose, type, defaultData, getBudgets }) => {
     };
 
     if (type === "add") {
+      console.log("3435", selectedAccount);
       const newBudgetData = {
         ...commonData,
         user_id: "5294e4fd-24bf-49c0-b58b-d2256d8286ee",
         description: "Thu nhập mới",
         duration,
+        account_id: selectedAccount.account_id,
         start_date: startDate,
         end_date: endDate,
-        account_id: "2b0a5bf0-2145-4764-bc67-21d4167983af",
         category_id: defaultData?.category_id || null,
       };
 
