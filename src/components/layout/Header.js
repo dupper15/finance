@@ -11,11 +11,7 @@ export function Header({ onMenuClick }) {
 
     const { dashboardData} = useDashboard();
 
-    const totalBalance = dashboardData.totalBalance;
-
-    useEffect(() => {
-        console.log(accounts)
-    }, [accounts])
+    const totalBalance = dashboardData?.totalBalance || 0;
 
     const handleLogout = async () => {
         try {
