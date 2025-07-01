@@ -15,6 +15,19 @@ export function Accounts() {
 	const [accountToDelete, setAccountToDelete] = useState(null);
 	const { userId } = useUser();
 
+	const [searchTerm, setSearchTerm] = useState("");
+	const [accountTypeFilter, setAccountTypeFilter] = useState("");
+
+	const filteredAccounts = accounts.filter((acc) => {
+		const matchesSearch = acc.name
+			.toLowerCase()
+			.includes(searchTerm.toLowerCase());
+		const matchesType = accountTypeFilter
+			? acc.account_type === accountTypeFilter
+			: true;
+		return matchesSearch && matchesType;
+	});
+
 	const handleAdd = () => {
 		setSelectedAccount(null);
 		setIsModalOpen(true);
@@ -78,7 +91,7 @@ export function Accounts() {
 	}
 
 	return (
-		<div className="space-y-6">
+		<div className="">
 			<div className="flex items-center justify-between">
 				<h1 className="text-2xl font-bold text-gray-900">Tài khoản</h1>
 				<button
@@ -88,8 +101,30 @@ export function Accounts() {
 				</button>
 			</div>
 
-			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				{accounts.map((account) => (
+			<div className="flex flex-col sm:flex-row sm:items-center mt-4 gap-4">
+				<input
+					type="text"
+					placeholder="Tìm kiếm theo tên..."
+					value={searchTerm}
+					onChange={(e) => setSearchTerm(e.target.value)}
+					className="px-3 py-2 border rounded-md flex-1"
+				/>
+				<select
+					value={accountTypeFilter}
+					onChange={(e) => setAccountTypeFilter(e.target.value)}
+					className="px-3 py-2 border rounded-md w-64">
+					<option value="">Tất cả loại tài khoản</option>
+					<option value="cash">Tiền mặt</option>
+					<option value="checking">Tài khoản thanh toán</option>
+					<option value="savings">Tài khoản tiết kiệm</option>
+					<option value="investment">Tài khoản đầu tư</option>
+					<option value="credit_card">Thẻ tín dụng</option>
+					<option value="loan">Khoản vay</option>
+				</select>
+			</div>
+
+			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-6">
+				{filteredAccounts.map((account) => (
 					<AccountCard
 						key={account.account_id}
 						account={account}

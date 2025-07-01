@@ -99,7 +99,7 @@ export default function AccountFormModal({
 							<option value="cash">Tiền mặt</option>
 							<option value="checking">Tài khoản thanh toán</option>
 							<option value="savings">Tài khoản tiết kiệm</option>
-							<option value="investment">Đầu tư</option>
+							<option value="investment">Tài khoản đầu tư</option>
 							<option value="credit_card">Thẻ tín dụng</option>
 							<option value="loan">Khoản vay</option>
 						</select>
