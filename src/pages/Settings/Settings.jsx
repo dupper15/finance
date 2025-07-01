@@ -158,59 +158,59 @@ export function Settings() {
                                 </div>
                             </div>
 
-                            <div className="border-t pt-6">
-                                <h4 className="text-lg font-medium text-gray-900 mb-4">Cập nhật hồ sơ</h4>
-                                <form onSubmit={handleProfileSubmit} className="max-w-md space-y-4">
-                                    {errors.profile && (
-                                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                                            {errors.profile}
-                                        </div>
-                                    )}
+                            {/*<div className="border-t pt-6">*/}
+                            {/*    <h4 className="text-lg font-medium text-gray-900 mb-4">Cập nhật hồ sơ</h4>*/}
+                            {/*    <form onSubmit={handleProfileSubmit} className="max-w-md space-y-4">*/}
+                            {/*        {errors.profile && (*/}
+                            {/*            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">*/}
+                            {/*                {errors.profile}*/}
+                            {/*            </div>*/}
+                            {/*        )}*/}
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Họ và tên
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={profileData.name}
-                                            onChange={handleProfileChange}
-                                            className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Nhập họ và tên"
-                                        />
-                                        {errors.name && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                                        )}
-                                    </div>
+                            {/*        <div>*/}
+                            {/*            <label className="block text-sm font-medium text-gray-700 mb-1">*/}
+                            {/*                Họ và tên*/}
+                            {/*            </label>*/}
+                            {/*            <input*/}
+                            {/*                type="text"*/}
+                            {/*                name="name"*/}
+                            {/*                value={profileData.name}*/}
+                            {/*                onChange={handleProfileChange}*/}
+                            {/*                className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"*/}
+                            {/*                placeholder="Nhập họ và tên"*/}
+                            {/*            />*/}
+                            {/*            {errors.name && (*/}
+                            {/*                <p className="mt-1 text-sm text-red-600">{errors.name}</p>*/}
+                            {/*            )}*/}
+                            {/*        </div>*/}
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Số điện thoại
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            name="phone"
-                                            value={profileData.phone}
-                                            onChange={handleProfileChange}
-                                            className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Nhập số điện thoại"
-                                        />
-                                        {errors.phone && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-                                        )}
-                                    </div>
+                            {/*        <div>*/}
+                            {/*            <label className="block text-sm font-medium text-gray-700 mb-1">*/}
+                            {/*                Số điện thoại*/}
+                            {/*            </label>*/}
+                            {/*            <input*/}
+                            {/*                type="tel"*/}
+                            {/*                name="phone"*/}
+                            {/*                value={profileData.phone}*/}
+                            {/*                onChange={handleProfileChange}*/}
+                            {/*                className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"*/}
+                            {/*                placeholder="Nhập số điện thoại"*/}
+                            {/*            />*/}
+                            {/*            {errors.phone && (*/}
+                            {/*                <p className="mt-1 text-sm text-red-600">{errors.phone}</p>*/}
+                            {/*            )}*/}
+                            {/*        </div>*/}
 
-                                    <button
-                                        type="submit"
-                                        disabled={loading.update}
-                                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center"
-                                    >
-                                        {loading.update && <LoadingSpinner size="sm" className="mr-2" />}
-                                        Lưu thay đổi
-                                    </button>
-                                </form>
-                            </div>
+                            {/*        <button*/}
+                            {/*            type="submit"*/}
+                            {/*            disabled={loading.update}*/}
+                            {/*            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center"*/}
+                            {/*        >*/}
+                            {/*            {loading.update && <LoadingSpinner size="sm" className="mr-2" />}*/}
+                            {/*            Lưu thay đổi*/}
+                            {/*        </button>*/}
+                            {/*    </form>*/}
+                            {/*</div>*/}
                         </div>
                     )}
 
