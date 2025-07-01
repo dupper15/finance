@@ -80,7 +80,7 @@ export function Reports() {
       const data = { accountId: selectedAccount.account_id };
       getTransactionByAccountMutation.mutate(data);
     }
-  }, [selectedAccount]);
+  }, [selectedAccount, selectedMonth, selectedYear]);
   const getBudgetsMutation = useMutation({
     mutationFn: budgetService.getBudget,
     onSuccess: (data) => {
@@ -111,127 +111,28 @@ export function Reports() {
 
       await exportReport(filters, format);
     } catch (error) {
-      console.error('Error exporting report:', error);
+      console.error("Error exporting report:", error);
     }
   };
 
-  function summarizeBudgetsByCategory(budgets, transactions) {
-    const categoryMap = new Map();
-
-    budgets.forEach((budget) => {
-      const categoryId = budget.category_id;
-      const categoryName = budget.categories?.name || "Không phân loại";
-
-      if (!categoryMap.has(categoryId)) {
-        categoryMap.set(categoryId, {
-          name: categoryName,
-          budgetAmount: 0,
-          spentAmount: 0,
-          status: "safe",
-        });
-      }
-
-      categoryMap.get(categoryId).budgetAmount += budget.amount;
-    });
-
-    transactions.forEach((transaction) => {
-      const categoryId = transaction.category_id;
-      const amount = transaction.amount;
-
-      if (
-          categoryMap.has(categoryId) &&
-          transaction.transaction_type === "expense"
-      ) {
-        categoryMap.get(categoryId).spentAmount += amount;
-      }
-    });
-
-    return Array.from(categoryMap.values()).map((category) => {
-      const percentage = category.budgetAmount
-          ? (category.spentAmount / category.budgetAmount) * 100
-          : 0;
-
-      let status = "safe";
-      let icon = FaCheckCircle;
-      let color = "text-green-600";
-
-      if (percentage >= 100) {
-        status = "over";
-        icon = FaTimesCircle;
-        color = "text-red-600";
-      } else if (percentage >= 80) {
-        status = "warning";
-        icon = FaExclamationCircle;
-        color = "text-yellow-600";
-      }
-
-      return {
-        ...category,
-        percentage: Math.min(percentage, 100),
-        status,
-        icon,
-        color,
-      };
-    });
-  }
-
-  function aggregateByCategory(transactions, budgets, type) {
-    const categoryMap = new Map();
-
-    budgets.forEach((budget) => {
-      const categoryId = budget.category_id;
-      const categoryName = budget.categories?.name || "Không phân loại";
-      if (!categoryMap.has(categoryId)) {
-        categoryMap.set(categoryId, { name: categoryName, amount: 0 });
-      }
-    });
-
-    transactions
-        .filter((transaction) => transaction.transaction_type === type)
-        .forEach((transaction) => {
-          const categoryId = transaction.category_id;
-          const categoryName = transaction.categories?.name || "Không phân loại";
-          const amount = transaction.amount;
-
-          if (!categoryMap.has(categoryId)) {
-            categoryMap.set(categoryId, { name: categoryName, amount: 0 });
-          }
-
-          categoryMap.get(categoryId).amount += amount;
-        });
-
-    const result = Array.from(categoryMap.values()).map((category) => {
-      return {
-        name: category.name || "Unknown",
-        amount: category.amount,
-      };
-    });
-
-    return result;
-  }
-
-  const summarizedCategories = summarizeBudgetsByCategory(
-      budgets,
-      transactions
-  );
   const allExpenseByCategory = aggregateByCategory(
-      transactions,
-      budgets,
-      "expense"
+    transactions,
+    budgets,
+    "expense"
   );
   const allIncomeByCategory = aggregateByCategory(
-      transactions,
-      budgets,
-      "income"
+    transactions,
+    budgets,
+    "income"
   );
 
   const topExpenseCategories = [...allExpenseByCategory]
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, 3);
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 3);
 
   const topIncomeSources = [...allIncomeByCategory]
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, 3);
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 3);
 
   const expensePieData = allExpenseByCategory.map((cat) => ({
     name: cat.name,
@@ -243,50 +144,59 @@ export function Reports() {
   }));
 
   const sumAmount = (list) =>
-      list.reduce((total, item) => total + item.amount, 0);
+    list.reduce((total, item) => total + item.amount, 0);
 
-  const thisMonthData = Array.isArray(transactions)
-    ? transactions.filter((item) => {
-        const date = new Date(item.transaction_date);
-        return (
-          date.getMonth() + 1 === selectedMonth &&
-          date.getFullYear() === selectedYear
-        );
-      })
-    : [];
+  const [income, setIncome] = useState({ thisMonth: 0, lastMonth: 0 });
+  const [expenses, setExpenses] = useState({ thisMonth: 0, lastMonth: 0 });
+  const [savings, setSavings] = useState({ thisMonth: 0, lastMonth: 0 });
 
-  const lastMonth = selectedMonth === 1 ? 12 : selectedMonth - 1;
-  const lastMonthYear = selectedMonth === 1 ? selectedYear - 1 : selectedYear;
-  const lastMonthData = Array.isArray(transactions)
-    ? transactions.filter((item) => {
-        const date = new Date(item.transaction_date);
-        return (
-          date.getMonth() + 1 === lastMonth &&
-          date.getFullYear() === lastMonthYear
-        );
-      })
-    : [];
+  useEffect(() => {
+    if (!Array.isArray(transactions)) return;
 
-  const income = {
-    thisMonth: sumAmount(
+    const thisMonthData = transactions.filter((item) => {
+      const date = new Date(item.transaction_date);
+      return (
+        date.getMonth() + 1 === selectedMonth &&
+        date.getFullYear() === selectedYear
+      );
+    });
+
+    const lastMonth = selectedMonth === 1 ? 12 : selectedMonth - 1;
+    const lastMonthYear = selectedMonth === 1 ? selectedYear - 1 : selectedYear;
+
+    const lastMonthData = transactions.filter((item) => {
+      const date = new Date(item.transaction_date);
+      return (
+        date.getMonth() + 1 === lastMonth &&
+        date.getFullYear() === lastMonthYear
+      );
+    });
+
+    const incomeData = {
+      thisMonth: sumAmount(
         thisMonthData.filter((i) => i.transaction_type === "income")
-    ),
-    lastMonth: sumAmount(
+      ),
+      lastMonth: sumAmount(
         lastMonthData.filter((i) => i.transaction_type === "income")
-    ),
-  };
-  const expenses = {
-    thisMonth: sumAmount(
+      ),
+    };
+
+    const expenseData = {
+      thisMonth: sumAmount(
         thisMonthData.filter((i) => i.transaction_type === "expense")
-    ),
-    lastMonth: sumAmount(
+      ),
+      lastMonth: sumAmount(
         lastMonthData.filter((i) => i.transaction_type === "expense")
-    ),
-  };
-  const savings = {
-    thisMonth: income.thisMonth - expenses.thisMonth,
-    lastMonth: income.lastMonth - expenses.lastMonth,
-  };
+      ),
+    };
+
+    setIncome(incomeData);
+    setExpenses(expenseData);
+    setSavings({
+      thisMonth: incomeData.thisMonth - expenseData.thisMonth,
+      lastMonth: incomeData.lastMonth - expenseData.lastMonth,
+    });
+  }, [selectedMonth, selectedYear, transactions]);
 
   const monthlyReportData = Array.from({ length: 12 }, (_, index) => {
     const m = index + 1;
@@ -354,6 +264,10 @@ export function Reports() {
     transaction_date,
     net,
   }));
+  const summarizedCategories = summarizeBudgetsByCategory(
+    budgets,
+    transactions
+  );
   function summarizeBudgetsByCategory(budgetCategories, transactions) {
     const categoryMap = {};
 
@@ -443,43 +357,50 @@ export function Reports() {
   }
 
   return (
-      <div className='space-y-6'>
-        <ReportHeader
-            month={selectedMonth}
-            selectedMonth={selectedMonth}
-            setSelectedMonth={setSelectedMonth}
-            setSelectedAccount={setSelectedAccount}
-            selectedAccount={selectedAccount}
-            setAccount={setAccount}
-            account={account || {}}
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-            onExportReport={handleExportReport}
-            exportLoading={exportLoading}
+    <div className='space-y-6'>
+      <ReportHeader
+        month={selectedMonth}
+        selectedMonth={selectedMonth}
+        setSelectedMonth={setSelectedMonth}
+        setSelectedAccount={setSelectedAccount}
+        selectedAccount={selectedAccount}
+        setAccount={setAccount}
+        account={account || {}}
+        selectedYear={selectedYear}
+        setSelectedYear={setSelectedYear}
+        onExportReport={handleExportReport}
+        exportLoading={exportLoading}
+      />
+      <Summary income={income} expenses={expenses} savings={savings} />
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <PieChartWithTopList
+          title='Thu nhập theo nguồn'
+          type='income'
+          pieData={incomePieData}
+          topList={topIncomeSources}
         />
-        <Summary income={income} expenses={expenses} savings={savings} />
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          <PieChartWithTopList
-              title='Thu nhập theo nguồn'
-              type='income'
-              pieData={incomePieData}
-              topList={topIncomeSources}
-          />
-          <PieChartWithTopList
-              title='Chi tiêu theo danh mục'
-              type='expense'
-              pieData={expensePieData}
-              topList={topExpenseCategories}
-          />
-        </div>
+        <PieChartWithTopList
+          title='Chi tiêu theo danh mục'
+          type='expense'
+          pieData={expensePieData}
+          topList={topExpenseCategories}
+        />
+      </div>
 
       <MonthlyIncomeExpenseChart monthlyReportData={monthlyReportData} />
       <NetCashFlowChart netTransactionData={netTransactionData} />
+
       <AccountComparisonChart
         accounts={account}
         month={selectedMonth}
         year={selectedYear}
       />
+
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {summarizedCategories.map((item, i) => (
+          <BudgetProgressCard key={i} item={item} />
+        ))}
+      </div>
     </div>
   );
 }

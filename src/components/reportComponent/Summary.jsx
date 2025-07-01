@@ -1,7 +1,13 @@
+import { useEffect } from "react";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { GiReceiveMoney, GiPayMoney, GiMoneyStack } from "react-icons/gi";
 
 const Summary = ({ income, expenses, savings }) => {
+  useEffect(() => {
+    console.log("Income:", income);
+    console.log("Expenses:", expenses);
+    console.log("Savings:", savings);
+  }, [income, expenses, savings]);
   const formatVND = (number) =>
     number.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
