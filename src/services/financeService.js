@@ -66,7 +66,6 @@ export class FinanceService {
 			transaction_date: transactionData.transaction_date,
 			transaction_type: transactionData.transaction_type,
 			category_id: transactionData.category_id || null,
-			tag_id: transactionData.tag_id || null,
 			memo: transactionData.memo?.trim() || null,
 			transfer_account_id: transactionData.transfer_account_id || null,
 		};
@@ -95,7 +94,6 @@ export class FinanceService {
 			transaction_date: transactionData.transaction_date,
 			transaction_type: transactionData.transaction_type,
 			category_id: transactionData.category_id || null,
-			tag_id: transactionData.tag_id || null,
 			memo: transactionData.memo?.trim() || null,
 			transfer_account_id: transactionData.transfer_account_id || null,
 		};
