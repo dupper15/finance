@@ -7,8 +7,8 @@ export function TransactionList({
                                     transactions = [],
                                     onEdit,
                                     onDelete,
-                                    onSelect,
-                                    selectedTransactions = [],
+                                    onSelectionChange,  // Changed from onSelect
+                                    selectedIds = [],   // Changed from selectedTransactions
                                     loading = false
                                 }) {
     const [selectAll, setSelectAll] = useState(false);
@@ -17,18 +17,18 @@ export function TransactionList({
         const checked = e.target.checked;
         setSelectAll(checked);
         if (checked) {
-            onSelect(transactions.map(t => t.transaction_id));
+            onSelectionChange(transactions.map(t => t.transaction_id));
         } else {
-            onSelect([]);
+            onSelectionChange([]);
         }
     };
 
     const handleSelectTransaction = (transactionId) => {
-        const isSelected = selectedTransactions.includes(transactionId);
+        const isSelected = selectedIds.includes(transactionId);
         if (isSelected) {
-            onSelect(selectedTransactions.filter(id => id !== transactionId));
+            onSelectionChange(selectedIds.filter(id => id !== transactionId));
         } else {
-            onSelect([...selectedTransactions, transactionId]);
+            onSelectionChange([...selectedIds, transactionId]);
         }
     };
 
@@ -64,44 +64,25 @@ export function TransactionList({
 
         return {
             display: `${sign}${formatCurrency(amount)}`,
-            color: transaction.transaction_type === TRANSACTION_TYPES.INCOME ? 'text-green-600' :
-                transaction.transaction_type === TRANSACTION_TYPES.EXPENSE ? 'text-red-600' :
-                    'text-blue-600'
+            color: transaction.transaction_type === TRANSACTION_TYPES.INCOME ?
+                'text-green-600' :
+                transaction.transaction_type === TRANSACTION_TYPES.EXPENSE ?
+                    'text-red-600' : 'text-blue-600'
         };
     };
 
     if (loading) {
         return (
-            <div className="bg-white shadow rounded-lg">
-                <div className="px-6 py-4 border-b border-gray-200">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="px-6 py-4 border-b border-gray-200">
-                        <div className="flex items-center space-x-4">
-                            <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
-                            <div className="flex-1 space-y-2">
-                                <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                                <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-                            </div>
-                            <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
-                        </div>
+            <div className="bg-white shadow rounded-lg p-6">
+                <div className="animate-pulse space-y-4">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="space-y-3">
+                        <div className="h-4 bg-gray-200 rounded"></div>
+                        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                        <div className="h-4 bg-gray-200 rounded"></div>
                     </div>
-                ))}
-            </div>
-        );
-    }
-
-    if (transactions.length === 0) {
-        return (
-            <div className="bg-white shadow rounded-lg p-8 text-center">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                </svg>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">Không có giao dịch</h3>
-                <p className="mt-1 text-sm text-gray-500">
-                    Bắt đầu bằng cách tạo giao dịch đầu tiên.
-                </p>
+                </div>
+                <p className="text-gray-500 text-center mt-4">Đang tải giao dịch...</p>
             </div>
         );
     }
@@ -128,7 +109,7 @@ export function TransactionList({
 
             <div className="divide-y divide-gray-200">
                 {transactions.map((transaction, index) => {
-                    const isSelected = selectedTransactions.includes(transaction.transaction_id);
+                    const isSelected = selectedIds.includes(transaction.transaction_id);
                     const amountDisplay = getAmountDisplay(transaction);
 
                     return (
@@ -162,11 +143,16 @@ export function TransactionList({
                                             <div className="flex items-center space-x-2 text-xs text-gray-500">
                                                 {transaction.categories?.name && (
                                                     <span className="px-2 py-1 bg-gray-100 rounded-full">
-                            {transaction.categories.name}
-                          </span>
+                                                        {transaction.categories.name}
+                                                    </span>
                                                 )}
-                                                {transaction.accounts?.name && (
-                                                    <span>{transaction.accounts.name}</span>
+                                                {transaction.tags?.name && (
+                                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                                                        {transaction.tags.name}
+                                                    </span>
+                                                )}
+                                                {transaction.memo && (
+                                                    <span className="text-gray-400">• {transaction.memo}</span>
                                                 )}
                                             </div>
                                         </div>
@@ -174,62 +160,47 @@ export function TransactionList({
                                 </div>
 
                                 <div className="col-span-2 text-center">
-                                    <div className="flex justify-center">
-                                        {transaction.is_split && (
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mr-2">
-                        Phân chia
-                      </span>
-                                        )}
-                                        <span className={`text-sm font-medium ${amountDisplay.color}`}>
-                      {amountDisplay.display}
-                    </span>
-                                    </div>
+                                    <span className={`text-sm font-medium ${amountDisplay.color}`}>
+                                        {amountDisplay.display}
+                                    </span>
                                 </div>
 
                                 <div className="col-span-2 text-center">
-                  <span className="text-sm text-gray-900">
-                    {/* This would need to be calculated based on running balance */}
-                      {formatCurrency(0)}
-                  </span>
+                                    <span className="text-sm text-gray-500">
+                                        0 đ
+                                    </span>
                                 </div>
 
                                 <div className="col-span-1 text-right">
                                     <div className="flex items-center justify-end space-x-2">
-                                        <button
-                                            onClick={() => onEdit(transaction)}
-                                            className="text-blue-600 hover:text-blue-900 text-sm"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(transaction.transaction_id)}
-                                            className="text-red-600 hover:text-red-900 text-sm"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
+                                        {onEdit && (
+                                            <button
+                                                onClick={() => onEdit(transaction)}
+                                                className="text-gray-400 hover:text-blue-600 transition-colors"
+                                                title="Chỉnh sửa"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                        {onDelete && (
+                                            <button
+                                                onClick={() => onDelete(transaction)}
+                                                className="text-gray-400 hover:text-red-600 transition-colors"
+                                                title="Xóa"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     );
                 })}
-            </div>
-
-            <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-700">
-                        Hiển thị {transactions.length} giao dịch
-                    </div>
-                    <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium text-gray-900">
-              Tổng: {formatCurrency(2570.00)}
-            </span>
-                    </div>
-                </div>
             </div>
         </div>
     );
