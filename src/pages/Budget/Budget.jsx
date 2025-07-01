@@ -103,21 +103,22 @@ const savingGoals = [
 ];
 
 export function Budget() {
-	const [account, setAccount] = useState([]);
-	const [selectedAccount, setSelectedAccount] = useState(null);
-	const [selectedMonth, setSelectedMonth] = useState(7);
-	const [selectedYear, setSelectedYear] = useState(2025);
-	const [data, setData] = useState([]);
-	const getBudgetsMutation = useMutation({
-		mutationFn: budgetService.getBudget,
-		onSuccess: (data) => {
-			setData(data);
-		},
-		onError: (error) => {
-			console.error("Error fetching budgets:", error);
-		},
-	});
-	const { user } = useAuth();
+  const [account, setAccount] = useState([]);
+  const [selectedAccount, setSelectedAccount] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(7);
+  const [selectedYear, setSelectedYear] = useState(2025);
+  const [data, setData] = useState([]);
+  const getBudgetsMutation = useMutation({
+    mutationFn: budgetService.getBudget,
+    onSuccess: (data) => {
+      setData(data);
+      console.log("hêllo", data);
+    },
+    onError: (error) => {
+      console.error("Error fetching budgets:", error);
+    },
+  });
+  const { user } = useAuth();
 
 	const userId = user?.id;
 	const getBudgets = () => {
@@ -198,59 +199,61 @@ export function Budget() {
 			0
 		);
 
-	if (loading) {
-		return <LoadingSpinner size="lg" className="h-64" />;
-	}
-	return (
-		<div>
-			<div className="space-y-6 w-full">
-				<MonthlyBudget
-					setSelectedAccount={setSelectedAccount}
-					selectedAccount={selectedAccount}
-					setAccount={setAccount}
-					account={account || {}}
-					selectedYear={selectedYear}
-					setSelectedYear={setSelectedYear}
-					totalExpenses={totalExpenses}
-					totalIncome={totalIncome}
-					selectedMonth={selectedMonth}
-					setSelectedMonth={setSelectedMonth}
-					setIsShowModal={setIsShowModal}
-				/>
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-					<IncomeBudget
-						getBudgets={getBudgets}
-						totalIncome={totalIncome}
-						data={data}
-						CATEGORY_STYLES={CATEGORY_STYLES}
-					/>
-					<OutcomeBudget
-						getBudgets={getBudgets}
-						data={data}
-						totalExpense={totalExpenses}
-						CATEGORY_STYLES={CATEGORY_STYLES}
-					/>
-				</div>
+  if (loading) {
+    return <LoadingSpinner size='lg' className='h-64' />;
+  }
+  return (
+    <div>
+      <div className='space-y-6 w-full'>
+        <MonthlyBudget
+          setSelectedAccount={setSelectedAccount}
+          selectedAccount={selectedAccount}
+          setAccount={setAccount}
+          account={account || {}}
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          totalExpenses={totalExpenses}
+          totalIncome={totalIncome}
+          selectedMonth={selectedMonth}
+          setSelectedMonth={setSelectedMonth}
+          setIsShowModal={setIsShowModal}
+        />
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <IncomeBudget
+            selectedAccount={selectedAccount}
+            getBudgets={getBudgets}
+            totalIncome={totalIncome}
+            data={data}
+            CATEGORY_STYLES={CATEGORY_STYLES}
+          />
+          <OutcomeBudget
+            selectedAccount={selectedAccount}
+            getBudgets={getBudgets}
+            data={data}
+            totalExpense={totalExpenses}
+            CATEGORY_STYLES={CATEGORY_STYLES}
+          />
+        </div>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-					<IncomeBudgetChart
-						incomeChartData={incomeChartData}
-						COLORS={COLORS}
-					/>
-					<OutcomeBudgetChart
-						expenseChartData={expenseChartData}
-						COLORS={COLORS}
-					/>
-				</div>
-				{/* <SavingGoals goals={savingGoals} /> */}
-			</div>
-			{isShowModal && (
-				<AddBudgetForm
-					getBudgets={getBudgets}
-					isOpen={isShowModal}
-					setIsOpen={setIsShowModal}
-				/>
-			)}
-		</div>
-	);
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <IncomeBudgetChart
+            incomeChartData={incomeChartData}
+            COLORS={COLORS}
+          />
+          <OutcomeBudgetChart
+            selectedAccount={selectedAccount}
+            expenseChartData={expenseChartData}
+            COLORS={COLORS}
+          />
+        </div>
+      </div>
+      {isShowModal && (
+        <AddBudgetForm
+          getBudgets={getBudgets}
+          isOpen={isShowModal}
+          setIsOpen={setIsShowModal}
+        />
+      )}
+    </div>
+  );
 }

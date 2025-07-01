@@ -28,7 +28,8 @@ export class BudgetService {
 
   async editBudget(data) {
     try {
-      const { budget_id, ...rest } = data;
+      const { budget_id, categoryName, groupName, ...rest } = data;
+      console.log("334", rest);
       const response = await apiService.put(`/budgets/${budget_id}`, rest);
       return response;
     } catch (error) {
@@ -47,6 +48,7 @@ export class BudgetService {
   }
 
   async addCategory(data) {
+    console.log("Adding category with data:", data);
     try {
       const response = await apiService.post("/categories", data);
       return response;
@@ -56,6 +58,7 @@ export class BudgetService {
   }
 
   async editCategory(category_id, data) {
+    console.log("alo", data);
     if (!category_id)
       throw new Error("Thiếu category_id để cập nhật danh mục.");
     try {
