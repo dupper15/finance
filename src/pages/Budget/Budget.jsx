@@ -123,6 +123,7 @@ export function Budget() {
   const getBudgets = () => {
     if (selectedMonth && selectedYear) {
       getBudgetsMutation.mutate({
+        account_id: selectedAccount?.account_id,
         month: selectedMonth,
         year: selectedYear,
         user_id: userId,
@@ -130,8 +131,10 @@ export function Budget() {
     }
   };
   useEffect(() => {
-    getBudgets();
-  }, [selectedMonth, selectedYear]);
+    if (selectedAccount !== null) {
+      getBudgets();
+    }
+  }, [selectedMonth, selectedYear, selectedAccount]);
   const incomeChartData = data
     .filter((item) => item.type === "income")
     .flatMap((item) =>
@@ -174,6 +177,7 @@ export function Budget() {
     mutationFn: budgetService.getAccount,
     onSuccess: (data) => {
       setAccount(data);
+      setSelectedAccount(data[1] || null);
       console.log("Account data:", data);
     },
     onError: (error) => {
@@ -181,7 +185,7 @@ export function Budget() {
     },
   });
   const getAccount = () => {
-    getAccountMutation.mutate("5294e4fd-24bf-49c0-b58b-d2256d8286ee");
+    getAccountMutation.mutate(userId);
   };
   useEffect(() => {
     getAccount();
