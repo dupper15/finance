@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useAuth } from '../../context/AuthContext.js';
 import { formatCurrency } from '../../utils/formatters/currency.js';
 import { useFinance } from '../../context/FinanceContext.js';
+import {useDashboard} from "../../hooks/useDashboard";
 
 export function Header({ onMenuClick }) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const { user, logout } = useAuth();
     const { accounts } = useFinance();
 
-    const totalBalance = accounts.reduce((sum, account) => sum + parseFloat(account.balance || 0), 0);
+    const { dashboardData} = useDashboard();
+
+    const totalBalance = dashboardData.totalBalance;
+
+    useEffect(() => {
+        console.log(accounts)
+    }, [accounts])
 
     const handleLogout = async () => {
         try {

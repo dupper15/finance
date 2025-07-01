@@ -29,6 +29,12 @@ export function Dashboard() {
         }
     };
 
+    useEffect((
+    ) => {
+
+        console.log(dashboardData)
+    }, [dashboardData]);
+
     // Helper function to format chart data
     const processChartData = (incomeExpenseData, categoryData) => {
         // Process income/expense data with proper date sorting
@@ -58,10 +64,6 @@ export function Dashboard() {
             expenseByCategory: processedCategoryData
         };
     };
-
-    useEffect(() => {
-        console.log(dashboardData)
-    }, [dashboardData]);
 
     useEffect(() => {
         const loadChartData = async () => {
