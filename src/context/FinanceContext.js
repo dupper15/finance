@@ -133,6 +133,24 @@ function financeReducer(state, action) {
 				categories: [...state.categories, action.payload],
 			};
 
+		case "UPDATE_CATEGORY":
+			return {
+				...state,
+				categories: state.categories.map((category) =>
+					category.category_id === action.payload.category_id
+						? action.payload
+						: category
+				),
+			};
+
+		case "DELETE_CATEGORY":
+			return {
+				...state,
+				categories: state.categories.filter(
+					(category) => category.category_id !== action.payload
+				),
+			};
+
 		case "SET_TAGS":
 			return {
 				...state,
@@ -171,6 +189,24 @@ function financeReducer(state, action) {
 			return {
 				...state,
 				budgets: [...state.budgets, action.payload],
+			};
+
+		case "UPDATE_BUDGET":
+			return {
+				...state,
+				budgets: state.budgets.map((budget) =>
+					budget.budget_id === action.payload.budget_id
+						? action.payload
+						: budget
+				),
+			};
+
+		case "DELETE_BUDGET":
+			return {
+				...state,
+				budgets: state.budgets.filter(
+					(budget) => budget.budget_id !== action.payload
+				),
 			};
 
 		case "SET_SCHEDULED_TRANSACTIONS":
@@ -394,6 +430,36 @@ export function FinanceProvider({ children }) {
 		[setError]
 	);
 
+	const updateCategory = useCallback(
+		async (categoryId, categoryData) => {
+			try {
+				const updatedCategory = await financeService.updateCategory(
+					categoryId,
+					categoryData
+				);
+				dispatch({ type: "UPDATE_CATEGORY", payload: updatedCategory });
+				return updatedCategory;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
+
+	const deleteCategory = useCallback(
+		async (categoryId) => {
+			try {
+				await financeService.deleteCategory(categoryId);
+				dispatch({ type: "DELETE_CATEGORY", payload: categoryId });
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
+
 	const loadTags = useCallback(async () => {
 		try {
 			setLoading("tags", true);
@@ -446,10 +512,10 @@ export function FinanceProvider({ children }) {
 		[setError]
 	);
 
-	const loadBudgets = useCallback(async () => {
+	const loadBudgets = useCallback(async (filters = {}) => {
 		try {
 			setLoading("budgets", true);
-			const budgets = await financeService.getBudgets();
+			const budgets = await financeService.getBudgets(filters);
 			dispatch({ type: "SET_BUDGETS", payload: budgets });
 		} catch (error) {
 			setError(error.message);
@@ -463,6 +529,36 @@ export function FinanceProvider({ children }) {
 				const newBudget = await financeService.createBudget(budgetData);
 				dispatch({ type: "ADD_BUDGET", payload: newBudget });
 				return newBudget;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
+
+	const updateBudget = useCallback(
+		async (budgetId, budgetData) => {
+			try {
+				const updatedBudget = await financeService.updateBudget(
+					budgetId,
+					budgetData
+				);
+				dispatch({ type: "UPDATE_BUDGET", payload: updatedBudget });
+				return updatedBudget;
+			} catch (error) {
+				setError(error.message);
+				throw error;
+			}
+		},
+		[setError]
+	);
+
+	const deleteBudget = useCallback(
+		async (budgetId) => {
+			try {
+				await financeService.deleteBudget(budgetId);
+				dispatch({ type: "DELETE_BUDGET", payload: budgetId });
 			} catch (error) {
 				setError(error.message);
 				throw error;
@@ -505,11 +601,10 @@ export function FinanceProvider({ children }) {
 	const updateScheduledTransaction = useCallback(
 		async (scheduledId, scheduledData) => {
 			try {
-				const updatedScheduled =
-					await financeService.updateScheduledTransaction(
-						scheduledId,
-						scheduledData
-					);
+				const updatedScheduled = await financeService.updateScheduledTransaction(
+					scheduledId,
+					scheduledData
+				);
 				dispatch({
 					type: "UPDATE_SCHEDULED_TRANSACTION",
 					payload: updatedScheduled,
@@ -589,12 +684,16 @@ export function FinanceProvider({ children }) {
 			deleteTransaction,
 			loadCategories,
 			createCategory,
+			updateCategory,
+			deleteCategory,
 			loadTags,
 			createTag,
 			updateTag,
 			deleteTag,
 			loadBudgets,
 			createBudget,
+			updateBudget,
+			deleteBudget,
 			loadScheduledTransactions,
 			createScheduledTransaction,
 			updateScheduledTransaction,
@@ -605,7 +704,7 @@ export function FinanceProvider({ children }) {
 			resetTransactionFilters,
 			setError,
 		}),
-		[state]
+		[state, loadAccounts, createAccount, updateAccount, deleteAccount, loadTransactions, createTransaction, updateTransaction, deleteTransaction, loadCategories, createCategory, updateCategory, deleteCategory, loadTags, createTag, updateTag, deleteTag, loadBudgets, createBudget, updateBudget, deleteBudget, loadScheduledTransactions, createScheduledTransaction, updateScheduledTransaction, deleteScheduledTransaction, toggleScheduledTransaction, loadDashboard, setTransactionFilters, resetTransactionFilters, setError]
 	);
 
 	return (

@@ -3,6 +3,7 @@ import { useAccounts } from "../../hooks/useAccounts";
 import { useCategories } from "../../hooks/useCategories";
 import { formatDateForInput } from "../../utils/formatters/date";
 import { TRANSACTION_TYPES, TRANSACTION_TYPE_LABELS } from "../../utils/constants/transactionTypes";
+import { CategoryManager } from "./CategoryManager";
 
 export function TransactionForm({
                                     transaction = null,
@@ -28,6 +29,7 @@ export function TransactionForm({
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [addAnother, setAddAnother] = useState(false);
+    const [showCategoryManager, setShowCategoryManager] = useState(false);
 
     useEffect(() => {
         if (transaction) {
@@ -57,6 +59,18 @@ export function TransactionForm({
         }
         setErrors({});
     }, [transaction, accounts, isOpen]);
+
+    const handleCategorySelect = (category) => {
+        setFormData(prev => ({
+            ...prev,
+            category_id: category.category_id
+        }));
+        setShowCategoryManager(false);
+    };
+
+    const handleManageCategories = () => {
+        setShowCategoryManager(true);
+    };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -327,19 +341,32 @@ export function TransactionForm({
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Danh mục
                                 </label>
-                                <select
-                                    name="category_id"
-                                    value={formData.category_id}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                                >
-                                    <option value="">Chọn danh mục</option>
-                                    {filteredCategories.map(category => (
-                                        <option key={category.category_id} value={category.category_id}>
-                                            {category.name}
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="flex gap-2">
+                                    <select
+                                        name="category_id"
+                                        value={formData.category_id}
+                                        onChange={handleChange}
+                                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                    >
+                                        <option value="">Chọn danh mục</option>
+                                        {filteredCategories.map(category => (
+                                            <option key={category.category_id} value={category.category_id}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <button
+                                        type="button"
+                                        onClick={handleManageCategories}
+                                        className="px-4 py-3 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2"
+                                        title="Quản lý danh mục"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         )}
 
@@ -450,6 +477,13 @@ export function TransactionForm({
                     </div>
                 </form>
             </div>
+
+            <CategoryManager
+                isOpen={showCategoryManager}
+                onClose={() => setShowCategoryManager(false)}
+                transactionType={formData.transaction_type}
+                onCategorySelect={handleCategorySelect}
+            />
         </div>
     );
 }

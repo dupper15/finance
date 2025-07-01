@@ -133,13 +133,23 @@ export class FinanceService {
 	async createCategory(categoryData) {
 		const apiData = {
 			name: categoryData.name.trim(),
-			description: categoryData.description?.trim() || null,
-			parent_category_id: categoryData.parent_category_id || null,
-			icon: categoryData.icon || null,
-			color: categoryData.color || null,
+			type: categoryData.type
 		};
 
 		return apiService.post("/categories", apiData);
+	}
+
+	async updateCategory(categoryId, categoryData) {
+		const apiData = {
+			name: categoryData.name.trim(),
+			type: categoryData.type
+		};
+
+		return apiService.put(`/categories/${categoryId}`, apiData);
+	}
+
+	async deleteCategory(categoryId) {
+		return apiService.delete(`/categories/${categoryId}`);
 	}
 
 	async getTags() {
@@ -170,12 +180,29 @@ export class FinanceService {
 		return apiService.delete(`/tags/${tagId}`);
 	}
 
-	async getBudgets() {
-		return apiService.get("/budgets");
+	async getBudgets(filters = {}) {
+		const queryParams = new URLSearchParams();
+
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value !== undefined && value !== null && value !== "") {
+				queryParams.append(key, value);
+			}
+		});
+
+		const queryString = queryParams.toString();
+		return apiService.get(`/budgets${queryString ? "?" + queryString : ""}`);
 	}
 
 	async createBudget(budgetData) {
 		return apiService.post("/budgets", budgetData);
+	}
+
+	async updateBudget(budgetId, budgetData) {
+		return apiService.put(`/budgets/${budgetId}`, budgetData);
+	}
+
+	async deleteBudget(budgetId) {
+		return apiService.delete(`/budgets/${budgetId}`);
 	}
 
 	async getBudgetProgress(budgetId) {
