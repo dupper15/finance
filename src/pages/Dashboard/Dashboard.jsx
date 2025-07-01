@@ -29,6 +29,12 @@ export function Dashboard() {
         }
     };
 
+    useEffect((
+    ) => {
+
+        console.log(dashboardData)
+    }, [dashboardData]);
+
     // Helper function to format chart data
     const processChartData = (incomeExpenseData, categoryData) => {
         // Process income/expense data with proper date sorting
@@ -223,7 +229,7 @@ export function Dashboard() {
                                         <dl>
                                             <dt className="text-sm font-medium text-gray-500 truncate">Chi tiêu tháng này</dt>
                                             <dd className="text-lg font-medium text-gray-900">
-                                                {formatCurrency(dashboardData?.monthlySummary?.totalexpense || 0)}
+                                                {formatCurrency(dashboardData?.monthlySummary?.totalExpenses || 0)}
                                             </dd>
                                         </dl>
                                     </div>
