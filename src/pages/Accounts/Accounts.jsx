@@ -63,8 +63,6 @@ export function Accounts() {
 			balance: parseFloat(data.balance),
 		};
 
-		console.log("Form submitting:", payload);
-
 		try {
 			if (selectedAccount) {
 				console.log(
