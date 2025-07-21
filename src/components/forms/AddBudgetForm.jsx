@@ -37,7 +37,7 @@ const AddBudgetForm = ({ getBudgets, isOpen, setIsOpen }) => {
     const categoryPayload = {
       name: formData.name,
       type: formData.type,
-      user_id: "5294e4fd-24bf-49c0-b58b-d2256d8286ee",
+      user_id: "4b2e8393-8d39-4761-bbb0-c3e974c2a359",
     };
 
     addCategoryMutation.mutate(categoryPayload);

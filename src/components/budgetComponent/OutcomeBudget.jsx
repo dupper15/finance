@@ -5,7 +5,13 @@ import EditChildExpenseModal from "./EditChildExpenseModal";
 import { budgetService } from "../../services/budgetService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const OutcomeBudget = ({ data, getBudgets, totalExpense, CATEGORY_STYLES }) => {
+const OutcomeBudget = ({
+  selectedAccount,
+  data,
+  getBudgets,
+  totalExpense,
+  CATEGORY_STYLES,
+}) => {
   const [expanded, setExpanded] = useState({});
   const [type, setType] = useState("add");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -262,6 +268,7 @@ const OutcomeBudget = ({ data, getBudgets, totalExpense, CATEGORY_STYLES }) => {
 
       {isModalOpen && (
         <ExpenseModal
+          selectedAccount={selectedAccount}
           getBudgets={getBudgets}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

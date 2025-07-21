@@ -5,7 +5,13 @@ import IncomeModal from "./IncomeModal";
 import EditChildIncomeModal from "./EditChildIncomeModal";
 import { budgetService } from "../../services/budgetService";
 
-const IncomeBudget = ({ getBudgets, totalIncome, data, CATEGORY_STYLES }) => {
+const IncomeBudget = ({
+  selectedAccount,
+  getBudgets,
+  totalIncome,
+  data,
+  CATEGORY_STYLES,
+}) => {
   const [expanded, setExpanded] = useState({});
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditChildOpen, setIsEditChildOpen] = useState(false);
@@ -248,6 +254,7 @@ const IncomeBudget = ({ getBudgets, totalIncome, data, CATEGORY_STYLES }) => {
       })}
 
       <IncomeModal
+        selectedAccount={selectedAccount}
         getBudgets={getBudgets}
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
